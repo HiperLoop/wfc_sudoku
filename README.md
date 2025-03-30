@@ -1,1 +1,1 @@
-# wfc_sudoku
+# Sudoku solver using wave function collapse
