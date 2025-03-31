@@ -43,8 +43,8 @@ function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas) {
 function drawBoard(board, gridSize, canvas, windowSize) {
     for (let i = 0; i < gridSize; ++i) {
         for (let j = 0; j < gridSize; ++j) {
-            if (board[i][j] != 0) {
-                drawNumber(board[i][j], [i, j], windowSize, gridSize, canvas);
+            if (board[i][j].num != 0) {
+                drawNumber(board[i][j].num, [i, j], windowSize, gridSize, canvas);
             }
         }
     }

@@ -1,3 +1,5 @@
+import { cell } from "./board.js";
+
 export function isHigh(windowSize:number[]): boolean {
     return windowSize[1] > windowSize[0] ? true : false;
 }
@@ -46,17 +48,17 @@ function drawNumber(numberToDraw:number, coords:number[], windowSize:number[], g
     }
 }
 
-function drawBoard(board:number[][], gridSize:number, canvas:HTMLCanvasElement, windowSize:number[]) {
+function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElement, windowSize:number[]) {
     for(let i = 0; i < gridSize; ++i) {
         for(let j = 0; j < gridSize; ++j) {
-            if(board[i][j] != 0) {
-                drawNumber(board[i][j], [i, j], windowSize, gridSize, canvas);
+            if(board[i][j].num != 0) {
+                drawNumber(board[i][j].num, [i, j], windowSize, gridSize, canvas);
             }
         }
     }
 }
 
-export function resize_canvas(windowSize:number[], canvas:HTMLCanvasElement, gridSize:number, board:number[][]) {
+export function resize_canvas(windowSize:number[], canvas:HTMLCanvasElement, gridSize:number, board:cell[][]) {
     resizeCanvas(windowSize, canvas);
     drawGrid(gridSize, windowSize, canvas);
     drawBoard(board, gridSize, canvas, windowSize);
