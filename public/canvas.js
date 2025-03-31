@@ -13,18 +13,19 @@ export function drawGrid(gridSize, windowSize, canvas) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
         ctx.strokeStyle = "#000000";
-        ctx.fillStyle = "#DCB35C";
+        ctx.fillStyle = "#FFFFFF";
         const size = maxSize(windowSize);
         ctx.fillRect(0, 0, size, size);
-        for (let i = 0; i < gridSize; ++i) {
+        for (let i = 0; i <= gridSize; ++i) {
             const rectSize = canvas.height / gridSize;
             const start = 0.5 * rectSize;
+            const outerOffset = 0;
             ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.moveTo(start - 1 + i * rectSize, start - 1);
-            ctx.lineTo(start - 1 + i * rectSize, canvas.height - start);
-            ctx.moveTo(start - 1, start - 1 + i * rectSize);
-            ctx.lineTo(canvas.height - start, start - 1 + i * rectSize);
+            ctx.lineWidth = i % 3 == 0 ? 5 : 2;
+            ctx.moveTo(outerOffset + i * rectSize, outerOffset);
+            ctx.lineTo(outerOffset + i * rectSize, canvas.height - outerOffset);
+            ctx.moveTo(outerOffset, outerOffset + i * rectSize);
+            ctx.lineTo(canvas.height - outerOffset, outerOffset + i * rectSize);
             ctx.stroke();
             ctx.closePath();
         }
@@ -33,9 +34,10 @@ export function drawGrid(gridSize, windowSize, canvas) {
 function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
-        const cellSize = windowSize[0] / gridSize;
-        ctx.font = "50px Arial";
-        ctx.fillText(numberToDraw.toString(), coords[0] * cellSize, coords[1] * cellSize);
+        const cellSize = canvas.height / gridSize;
+        ctx.fillStyle = "#0000CC";
+        ctx.font = (Math.floor(cellSize * 0.8)).toString() + "px Arial";
+        ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
     }
 }
 function drawBoard(board, gridSize, canvas, windowSize) {
@@ -48,11 +50,7 @@ function drawBoard(board, gridSize, canvas, windowSize) {
     }
 }
 export function resize_canvas(windowSize, canvas, gridSize, board) {
-    console.log("1");
     resizeCanvas(windowSize, canvas);
-    console.log("2");
     drawGrid(gridSize, windowSize, canvas);
-    console.log("3");
     drawBoard(board, gridSize, canvas, windowSize);
-    console.log("4");
 }
