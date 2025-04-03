@@ -1,13 +1,16 @@
 import { resize_canvas, drawBoard } from "./canvas.js";
 import { populateBoard , cell } from "./board.js";
 import { solve } from "./solver.js";
+import { test_one , cellBoardFromValues , easy } from "./tests.js";
 
 let cnv:HTMLCanvasElement;
 let gridSize = 9;
 let board:cell[][] = [[]];
 
 window.onload = function() {
-    board = populateBoard(gridSize);
+    //board = populateBoard(gridSize);
+    //board = test_one;
+    board = cellBoardFromValues(easy);
     //console.log("works");
     cnv = <HTMLCanvasElement> document.getElementById("myCanvas");
     cnv.addEventListener("mouseup", (event) => {solve(board, gridSize); drawBoard(board, gridSize, cnv, [window.innerWidth, window.innerHeight], true)});
