@@ -48,10 +48,16 @@ function drawNumber(numberToDraw:number, coords:number[], windowSize:number[], g
     }
 }
 
-function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElement, windowSize:number[]) {
+export function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElement, windowSize:number[], df:boolean=false) {
+    drawGrid(gridSize, windowSize, canvas);
     for(let i = 0; i < gridSize; ++i) {
         for(let j = 0; j < gridSize; ++j) {
-            if(board[i][j].num != 0) {
+            if(df) {
+                if(board[i][j].possibilities.size > 0) {
+                    drawNumber(board[i][j].possibilities.size, [i, j], windowSize, gridSize, canvas);
+                }
+            }
+            else if(board[i][j].num != 0) {
                 drawNumber(board[i][j].num, [i, j], windowSize, gridSize, canvas);
             }
         }
@@ -60,6 +66,5 @@ function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElement, wi
 
 export function resize_canvas(windowSize:number[], canvas:HTMLCanvasElement, gridSize:number, board:cell[][]) {
     resizeCanvas(windowSize, canvas);
-    drawGrid(gridSize, windowSize, canvas);
     drawBoard(board, gridSize, canvas, windowSize);
 }

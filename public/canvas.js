@@ -40,10 +40,16 @@ function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas) {
         ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
     }
 }
-function drawBoard(board, gridSize, canvas, windowSize) {
+export function drawBoard(board, gridSize, canvas, windowSize, df = false) {
+    drawGrid(gridSize, windowSize, canvas);
     for (let i = 0; i < gridSize; ++i) {
         for (let j = 0; j < gridSize; ++j) {
-            if (board[i][j].num != 0) {
+            if (df) {
+                if (board[i][j].possibilities.size > 0) {
+                    drawNumber(board[i][j].possibilities.size, [i, j], windowSize, gridSize, canvas);
+                }
+            }
+            else if (board[i][j].num != 0) {
                 drawNumber(board[i][j].num, [i, j], windowSize, gridSize, canvas);
             }
         }
@@ -51,6 +57,5 @@ function drawBoard(board, gridSize, canvas, windowSize) {
 }
 export function resize_canvas(windowSize, canvas, gridSize, board) {
     resizeCanvas(windowSize, canvas);
-    drawGrid(gridSize, windowSize, canvas);
     drawBoard(board, gridSize, canvas, windowSize);
 }
