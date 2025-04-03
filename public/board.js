@@ -8,5 +8,7 @@ export function populateBoard(gridSize) {
             board[i][j].num = Math.floor(Math.random() * 2) >= 1 ? Math.floor(Math.random() * gridSize) + 1 : 0;
         }
     }
+    /* board[0][0].num = 1;
+    board[2][2].num = 3; */
     return board;
 }
