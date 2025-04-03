@@ -16,7 +16,7 @@ function getNumbersInLine(board, gridSize, row, lineIndex) {
 }
 function updateLine(board, gridSize, row, lineIndex, remove, unsolvedSquares) {
     for (let i = 0; i < gridSize; ++i) {
-        if (!unsolvedSquares.has(row ? (lineIndex * gridSize) + i : (i * gridSize) + lineIndex)) {
+        if (unsolvedSquares.has(row ? (lineIndex * gridSize) + i : (i * gridSize) + lineIndex)) {
             remove.forEach((value, key, set) => {
                 row ? board[lineIndex][i].possibilities.delete(value) : board[i][lineIndex].possibilities.delete(value);
             });
@@ -35,7 +35,7 @@ function getNumbersInSquare(board, middleCoords) {
 function updateSquare(board, gridSize, middleCoords, remove, unsolvedSquares) {
     for (let i = -1; i <= 1; ++i) {
         for (let j = -1; j <= 1; ++j) {
-            if (unsolvedSquares.has((middleCoords[0] + i) * gridSize + j)) {
+            if (unsolvedSquares.has((middleCoords[0] + i) * gridSize + (middleCoords[1] + j))) {
                 remove.forEach((value, key, set) => {
                     board[middleCoords[0] + i][middleCoords[1] + j].possibilities.delete(value);
                 });
