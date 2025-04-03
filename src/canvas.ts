@@ -54,11 +54,11 @@ export function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElem
         for(let j = 0; j < gridSize; ++j) {
             if(df) {
                 if(board[i][j].possibilities.size > 0) {
-                    drawNumber(board[i][j].possibilities.size, [i, j], windowSize, gridSize, canvas);
+                    drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas);
                 }
             }
             else if(board[i][j].num != 0) {
-                drawNumber(board[i][j].num, [i, j], windowSize, gridSize, canvas);
+                drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas);
             }
         }
     }
