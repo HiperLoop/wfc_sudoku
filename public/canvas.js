@@ -40,13 +40,22 @@ export function drawGrid(gridSize, windowSize, canvas) {
         }
     }
 }
-function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas, colour) {
+function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas, colour, possibilities = false) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
         const cellSize = canvas.height / gridSize;
+        const smallOffsetSize = cellSize / 3;
         ctx.fillStyle = colour;
         ctx.font = (Math.floor(cellSize * 0.8)).toString() + "px Arial";
-        ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
+        if (possibilities) {
+            const offsetY = Math.floor((numberToDraw - 1) / Math.sqrt(gridSize));
+            const offsetX = (numberToDraw - 1) % Math.sqrt(gridSize);
+            ctx.font = (Math.floor((cellSize * 0.8) / Math.sqrt(gridSize))).toString() + "px Arial";
+            ctx.fillText(numberToDraw.toString(), (coords[0] + 0.08) * cellSize + (offsetX * smallOffsetSize), (coords[1] + 0.28) * cellSize + (offsetY * smallOffsetSize));
+        }
+        else {
+            ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
+        }
     }
 }
 export function drawBoard(board_1, gridSize_1, canvas_1, windowSize_1) {
@@ -56,7 +65,10 @@ export function drawBoard(board_1, gridSize_1, canvas_1, windowSize_1) {
             for (let i = 0; i < gridSize; ++i) {
                 for (let j = 0; j < gridSize; ++j) {
                     if (df && board[i][j].possibilities.size > 0) {
-                        drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000");
+                        board[i][j].possibilities.forEach((value) => {
+                            drawNumber(value, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
+                        });
+                        //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                     }
                     else if (board[i][j].num != 0) {
                         drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas, "#0000CC");
