@@ -215,6 +215,9 @@ function boxRows(board, gridSize, unsolvedSquares) {
 function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas) {
     return __awaiter(this, void 0, void 0, function* () {
         let checkSquares = [];
+        if (unsolvedSquares.size == 0) {
+            return 1;
+        } //return if sudoku solved
         unsolvedSquares.forEach((value, key, set) => { checkSquares[value] = [board[Math.floor(value / gridSize)][value % gridSize].possibilities.size, value]; });
         checkSquares.sort((a, b) => a[0] - b[0]);
         for (let i = 0; checkSquares[i][0] == 1; ++i) {
@@ -232,16 +235,23 @@ function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, 
             updateLine(board, gridSize, false, y, delValue, unsolvedSquares);
             updateSquare(board, gridSize, [(Math.floor(x / Math.sqrt(gridSize)) * 3) + 1, (Math.floor(y / Math.sqrt(gridSize)) * 3) + 1], delValue, unsolvedSquares);
             yield drawBoard(board, gridSize, canvas, windowSize, true);
+            if (unsolvedSquares.size == 0) {
+                return 1;
+            } //return if sudoku solved
             wait(500);
         }
         lineSingles(board, gridSize, true);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(500);
         lineSingles(board, gridSize, false);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(500);
         boxSingles(board, gridSize);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(500);
         boxRows(board, gridSize, unsolvedSquares);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(500);
         //wait(500000);
     });
 }
@@ -259,10 +269,15 @@ export function solve(board, gridSize, windowSize, canvas) {
             }
         }
         generateDegreesOfFreedom(board, gridSize, unsolvedSquares);
-        const maxIterations = 2000;
+        yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(10000);
+        const maxIterations = 100;
         for (let i = 0; unsolvedSquares.size > 0 && i < maxIterations; ++i) {
             console.log("Iterations: " + (i + 1) + "/" + maxIterations);
-            yield waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas);
+            if ((yield waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas)) == 1) {
+                console.log("Sudoku solved!");
+                return 1;
+            }
         }
     });
 }

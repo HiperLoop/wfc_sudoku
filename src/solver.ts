@@ -201,6 +201,7 @@ function boxRows(board:cell[][], gridSize:number, unsolvedSquares:Set<number>) {
 
 async function waveFunctionCollapseStep(board:cell[][], gridSize:number, unsolvedSquares:Set<number>, windowSize:number[], canvas:HTMLCanvasElement) {
     let checkSquares:number[][] = [];
+    if(unsolvedSquares.size == 0) {return 1;} //return if sudoku solved
     unsolvedSquares.forEach((value:number, key:number, set:Set<number>) => {checkSquares[value] = [board[Math.floor(value/gridSize)][value % gridSize].possibilities.size, value]});
     checkSquares.sort((a, b) => a[0] - b[0]);
 
@@ -213,22 +214,28 @@ async function waveFunctionCollapseStep(board:cell[][], gridSize:number, unsolve
         console.log("pos:" + board[x][y].possibilities.size)
         console.log("val:" + setValue);
         unsolvedSquares.delete(checkSquares[i][1]);
+        
         board[x][y].possibilities = new Set<number>;
         let delValue = new Set<number>([setValue]);
         updateLine(board, gridSize, true, x, delValue, unsolvedSquares);
         updateLine(board, gridSize, false, y, delValue, unsolvedSquares);
         updateSquare(board, gridSize, [(Math.floor(x/Math.sqrt(gridSize))*3)+1, (Math.floor(y/Math.sqrt(gridSize))*3)+1], delValue, unsolvedSquares);
         await drawBoard(board, gridSize, canvas, windowSize, true);
+        if(unsolvedSquares.size == 0) {return 1;} //return if sudoku solved
         wait(500);
     }
     lineSingles(board, gridSize, true);
     await drawBoard(board, gridSize, canvas, windowSize, true);
+    //wait(500);
     lineSingles(board, gridSize, false);
     await drawBoard(board, gridSize, canvas, windowSize, true);
+    //wait(500);
     boxSingles(board, gridSize);
     await drawBoard(board, gridSize, canvas, windowSize, true);
+    //wait(500);
     boxRows(board, gridSize, unsolvedSquares);
     await drawBoard(board, gridSize, canvas, windowSize, true);
+    //wait(500);
     //wait(500000);
 }
 
@@ -243,10 +250,12 @@ export async function solve(board:cell[][], gridSize:number, windowSize:number[]
         }
     }
     generateDegreesOfFreedom(board, gridSize, unsolvedSquares);
+    await drawBoard(board, gridSize, canvas, windowSize, true);
+    //wait(10000);
 
-    const maxIterations:number = 2000;
+    const maxIterations:number = 100;
     for(let i = 0; unsolvedSquares.size > 0 && i < maxIterations; ++i) {
         console.log("Iterations: " + (i+1) + "/" + maxIterations);
-        await waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas);
+        if(await waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas) == 1) {console.log("Sudoku solved!"); return 1;}
     }
 }
