@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { drawBoard } from "./canvas.js";
+import { set_intersection, set_subtraction, set_union } from "./set_arithmetic.js";
 function getNumbersInLine(board, gridSize, row, lineIndex) {
     let foundNumbers = new Set();
     for (let i = 0; i < gridSize; ++i) {
@@ -24,8 +25,11 @@ function getNumbersInLine(board, gridSize, row, lineIndex) {
     }
     return foundNumbers;
 }
-function updateLine(board, gridSize, row, lineIndex, remove, unsolvedSquares) {
+function updateLine(board, gridSize, row, lineIndex, remove, unsolvedSquares, skipSquare = -1) {
     for (let i = 0; i < gridSize; ++i) {
+        if (i < (skipSquare + 1) * Math.sqrt(gridSize) && i >= skipSquare * Math.sqrt(gridSize)) {
+            continue;
+        }
         if (unsolvedSquares.has(row ? (lineIndex * gridSize) + i : (i * gridSize) + lineIndex)) {
             remove.forEach((value, key, set) => {
                 row ? board[lineIndex][i].possibilities.delete(value) : board[i][lineIndex].possibilities.delete(value);
@@ -167,12 +171,44 @@ function boxSingles(board, gridSize) {
                     }
                 }
                 if (numCount == 1) {
-                    console.log(coords + " | " + value);
-                    console.log(board[coords[0]][coords[1]].possibilities);
                     board[coords[0]][coords[1]].possibilities.size > 1 ? board[coords[0]][coords[1]].possibilities = new Set([value]) : null;
                     //wait(20000);
                 }
             });
+        }
+    }
+}
+function boxRows(board, gridSize, unsolvedSquares) {
+    const gridSqrt = Math.sqrt(gridSize);
+    for (let i = 0; i < gridSqrt; ++i) {
+        for (let j = 0; j < gridSqrt; ++j) {
+            const directions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8]];
+            const complementDirections = [[1, 2], [0, 2], [0, 1], [4, 5], [3, 5], [4, 5]];
+            for (let k = 0; k < 6; ++k) {
+                const pairOne = set_intersection([board[(gridSqrt * i) + (Math.floor(directions[k][0] / gridSqrt))][(gridSqrt * j) + (directions[k][0] % gridSqrt)].possibilities, board[(gridSqrt * i) + (Math.floor(directions[k][1] / gridSqrt))][(gridSqrt * j) + (directions[k][1] % gridSqrt)].possibilities]);
+                const pairtwo = set_intersection([board[(gridSqrt * i) + (Math.floor(directions[k][1] / gridSqrt))][(gridSqrt * j) + (directions[k][1] % gridSqrt)].possibilities, board[(gridSqrt * i) + (Math.floor(directions[k][2] / gridSqrt))][(gridSqrt * j) + (directions[k][2] % gridSqrt)].possibilities]);
+                const pairThree = set_intersection([board[(gridSqrt * i) + (Math.floor(directions[k][0] / gridSqrt))][(gridSqrt * j) + (directions[k][0] % gridSqrt)].possibilities, board[(gridSqrt * i) + (Math.floor(directions[k][2] / gridSqrt))][(gridSqrt * j) + (directions[k][2] % gridSqrt)].possibilities]);
+                const possibleNums = set_union([pairOne, pairtwo, pairThree]);
+                let otherNums = new Set;
+                for (let m = 0; m < 2; ++m) {
+                    for (let n = 0; n < 3; ++n) {
+                        otherNums = set_union([otherNums, board[(gridSqrt * i) + (Math.floor(directions[complementDirections[k][m]][n] / gridSqrt))][(gridSqrt * j) + (directions[complementDirections[k][m]][n] % gridSqrt)].possibilities]);
+                    }
+                }
+                const removeNums = set_intersection([possibleNums, otherNums]);
+                const lineBoundNums = set_subtraction(possibleNums, [removeNums]);
+                //console.log(i + " " + j);
+                if (directions[k][1] - directions[k][0] == 1) {
+                    updateLine(board, gridSize, true, (gridSqrt * i) + (Math.floor(directions[k][0] / gridSqrt)), lineBoundNums, unsolvedSquares, j);
+                    //console.log("row: " + ((gridSqrt*i)+(Math.floor(directions[k][0]/gridSqrt))));
+                }
+                else {
+                    updateLine(board, gridSize, false, (gridSqrt * j) + (directions[k][0] % gridSqrt), lineBoundNums, unsolvedSquares, i);
+                    //console.log("col: " + ((gridSqrt*j)+(directions[k][0]%gridSqrt)));
+                }
+                /* console.log(lineBoundNums);
+                console.log(otherNums); */
+            }
         }
     }
 }
@@ -196,7 +232,7 @@ function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, 
             updateLine(board, gridSize, false, y, delValue, unsolvedSquares);
             updateSquare(board, gridSize, [(Math.floor(x / Math.sqrt(gridSize)) * 3) + 1, (Math.floor(y / Math.sqrt(gridSize)) * 3) + 1], delValue, unsolvedSquares);
             yield drawBoard(board, gridSize, canvas, windowSize, true);
-            //wait(500);
+            wait(500);
         }
         lineSingles(board, gridSize, true);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
@@ -204,6 +240,9 @@ function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, 
         yield drawBoard(board, gridSize, canvas, windowSize, true);
         boxSingles(board, gridSize);
         yield drawBoard(board, gridSize, canvas, windowSize, true);
+        boxRows(board, gridSize, unsolvedSquares);
+        yield drawBoard(board, gridSize, canvas, windowSize, true);
+        //wait(500000);
     });
 }
 export function solve(board, gridSize, windowSize, canvas) {
