@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 export function isHigh(windowSize) {
     return windowSize[1] > windowSize[0] ? true : false;
 }
@@ -31,29 +40,34 @@ export function drawGrid(gridSize, windowSize, canvas) {
         }
     }
 }
-function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas) {
+function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas, colour) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
         const cellSize = canvas.height / gridSize;
-        ctx.fillStyle = "#0000CC";
+        ctx.fillStyle = colour;
         ctx.font = (Math.floor(cellSize * 0.8)).toString() + "px Arial";
         ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
     }
 }
-export function drawBoard(board, gridSize, canvas, windowSize, df = false) {
-    drawGrid(gridSize, windowSize, canvas);
-    for (let i = 0; i < gridSize; ++i) {
-        for (let j = 0; j < gridSize; ++j) {
-            if (df) {
-                if (board[i][j].possibilities.size > 0) {
-                    drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas);
+export function drawBoard(board_1, gridSize_1, canvas_1, windowSize_1) {
+    return __awaiter(this, arguments, void 0, function* (board, gridSize, canvas, windowSize, df = false) {
+        return yield new Promise((resolve) => {
+            drawGrid(gridSize, windowSize, canvas);
+            for (let i = 0; i < gridSize; ++i) {
+                for (let j = 0; j < gridSize; ++j) {
+                    if (df && board[i][j].possibilities.size > 0) {
+                        drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000");
+                    }
+                    else if (board[i][j].num != 0) {
+                        drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas, "#0000CC");
+                    }
                 }
             }
-            else if (board[i][j].num != 0) {
-                drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas);
-            }
-        }
-    }
+            setTimeout(() => {
+                resolve(true);
+            }, 10);
+        });
+    });
 }
 export function resize_canvas(windowSize, canvas, gridSize, board) {
     resizeCanvas(windowSize, canvas);
