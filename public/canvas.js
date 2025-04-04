@@ -65,7 +65,7 @@ export function drawBoard(board_1, gridSize_1, canvas_1, windowSize_1) {
             }
             setTimeout(() => {
                 resolve(true);
-            }, 10);
+            }, 1);
         });
     });
 }

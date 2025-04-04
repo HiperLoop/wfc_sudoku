@@ -63,7 +63,7 @@ export async function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanv
         }
         setTimeout(() => { 
             resolve(true);
-        }, 10);
+        }, 1);
     });
 }
 
