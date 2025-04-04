@@ -79,15 +79,18 @@ function wait(ms:number){
 function lineSingles(board:cell[][], gridSize:number, row:boolean) {
     for(let i = 0; i < gridSize; ++i) {
         let possibleNums:Set<number> = new Set<number>;
+        let solved:boolean = true;
         for(let j = 0; j < gridSize; ++j) {
             if(row) {
+                if(board[i][j].possibilities.size > 1) {solved = false;}
                 board[i][j].possibilities.forEach((value:number, key:number, set:Set<number>) => {possibleNums.add(value)});
             }
             else {
+                if(board[i][j].possibilities.size > 1) {solved = false;}
                 board[j][i].possibilities.forEach((value:number, key:number, set:Set<number>) => {possibleNums.add(value)});
             }
         }
-        if(row && i == 7) console.log(possibleNums);
+        if(solved) {continue;}
         possibleNums.forEach((value:number, key:number, set:Set<number>) => {
             let numCount = 0;
             let jIndex:number = 0;
@@ -109,9 +112,9 @@ function lineSingles(board:cell[][], gridSize:number, row:boolean) {
                     }
                 }
             }
-            if(value == 1) console.log(numCount);
+            //if(value == 1) console.log(numCount);
             if(numCount == 1) {
-                console.log("found something");
+                //console.log("found something");
                 if(row) {
                     board[i][jIndex].possibilities = new Set<number>([value]);
                 }
@@ -120,6 +123,43 @@ function lineSingles(board:cell[][], gridSize:number, row:boolean) {
                 }
             }
         });
+    }
+}
+
+function boxSingles(board:cell[][], gridSize:number) {
+    const gridSqrt = Math.sqrt(gridSize);
+    for(let i = 0; i < gridSqrt; ++i) {
+        for(let j = 0; j < gridSqrt; ++j) {
+            let possibleNums:Set<number> = new Set<number>;
+            let solved:boolean = true;
+            for(let k = 0; k < gridSqrt; ++k) {
+                for(let l = 0; l < gridSqrt; ++l) {
+                    //console.log("checking" + (i+k) + "-" + (j+l));
+                    if(board[(gridSqrt*i)+k][(gridSqrt*j)+l].possibilities.size > 1) {solved = false;}
+                    board[(gridSqrt*i)+k][(gridSqrt*j)+l].possibilities.forEach((value:number, key:number, set:Set<number>) => {possibleNums.add(value)});
+                }
+            }
+            if(solved) {continue;}
+            possibleNums.forEach((value:number, key:number, set:Set<number>) => {
+                let numCount = 0;
+                let coords:number[] = [];
+                for(let k = 0; k < Math.sqrt(gridSize); ++k) {
+                    for(let l = 0; l < Math.sqrt(gridSize); ++l) {
+                        if(board[(gridSqrt*i)+k][(gridSqrt*j)+l].possibilities.has(value)) {
+                            ++numCount;
+                            coords = [(gridSqrt*i)+k, (gridSqrt*j)+l];
+                            if(numCount == 2) {continue;}
+                        }
+                    }
+                }
+                if(numCount == 1) {
+                    console.log(coords + " | " + value);
+                    console.log(board[coords[0]][coords[1]].possibilities);
+                    board[coords[0]][coords[1]].possibilities.size > 1 ? board[coords[0]][coords[1]].possibilities = new Set<number>([value]) : null;
+                    //wait(20000);
+                }
+            });
+        }
     }
 }
 
@@ -143,11 +183,14 @@ async function waveFunctionCollapseStep(board:cell[][], gridSize:number, unsolve
         updateLine(board, gridSize, false, y, delValue, unsolvedSquares);
         updateSquare(board, gridSize, [(Math.floor(x/Math.sqrt(gridSize))*3)+1, (Math.floor(y/Math.sqrt(gridSize))*3)+1], delValue, unsolvedSquares);
         await drawBoard(board, gridSize, canvas, windowSize, true);
-        wait(500);
+        //wait(500);
     }
-    console.log("here");
     lineSingles(board, gridSize, true);
+    await drawBoard(board, gridSize, canvas, windowSize, true);
     lineSingles(board, gridSize, false);
+    await drawBoard(board, gridSize, canvas, windowSize, true);
+    boxSingles(board, gridSize);
+    await drawBoard(board, gridSize, canvas, windowSize, true);
 }
 
 export async function solve(board:cell[][], gridSize:number, windowSize:number[], canvas:HTMLCanvasElement) {
@@ -162,7 +205,9 @@ export async function solve(board:cell[][], gridSize:number, windowSize:number[]
     }
     generateDegreesOfFreedom(board, gridSize, unsolvedSquares);
 
-    for(let i = 0;unsolvedSquares.size > 0 && i < 100; ++i) {
+    const maxIterations:number = 2000;
+    for(let i = 0;unsolvedSquares.size > 0 && i < maxIterations; ++i) {
+        console.log("Iterations: " + (i+1) + "/" + maxIterations);
         await waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas);
     }
 }

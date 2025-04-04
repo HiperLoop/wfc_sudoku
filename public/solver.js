@@ -78,16 +78,24 @@ function wait(ms) {
 function lineSingles(board, gridSize, row) {
     for (let i = 0; i < gridSize; ++i) {
         let possibleNums = new Set;
+        let solved = true;
         for (let j = 0; j < gridSize; ++j) {
             if (row) {
+                if (board[i][j].possibilities.size > 1) {
+                    solved = false;
+                }
                 board[i][j].possibilities.forEach((value, key, set) => { possibleNums.add(value); });
             }
             else {
+                if (board[i][j].possibilities.size > 1) {
+                    solved = false;
+                }
                 board[j][i].possibilities.forEach((value, key, set) => { possibleNums.add(value); });
             }
         }
-        if (row && i == 7)
-            console.log(possibleNums);
+        if (solved) {
+            continue;
+        }
         possibleNums.forEach((value, key, set) => {
             let numCount = 0;
             let jIndex = 0;
@@ -113,10 +121,9 @@ function lineSingles(board, gridSize, row) {
                     }
                 }
             }
-            if (value == 1)
-                console.log(numCount);
+            //if(value == 1) console.log(numCount);
             if (numCount == 1) {
-                console.log("found something");
+                //console.log("found something");
                 if (row) {
                     board[i][jIndex].possibilities = new Set([value]);
                 }
@@ -125,6 +132,48 @@ function lineSingles(board, gridSize, row) {
                 }
             }
         });
+    }
+}
+function boxSingles(board, gridSize) {
+    const gridSqrt = Math.sqrt(gridSize);
+    for (let i = 0; i < gridSqrt; ++i) {
+        for (let j = 0; j < gridSqrt; ++j) {
+            let possibleNums = new Set;
+            let solved = true;
+            for (let k = 0; k < gridSqrt; ++k) {
+                for (let l = 0; l < gridSqrt; ++l) {
+                    //console.log("checking" + (i+k) + "-" + (j+l));
+                    if (board[(gridSqrt * i) + k][(gridSqrt * j) + l].possibilities.size > 1) {
+                        solved = false;
+                    }
+                    board[(gridSqrt * i) + k][(gridSqrt * j) + l].possibilities.forEach((value, key, set) => { possibleNums.add(value); });
+                }
+            }
+            if (solved) {
+                continue;
+            }
+            possibleNums.forEach((value, key, set) => {
+                let numCount = 0;
+                let coords = [];
+                for (let k = 0; k < Math.sqrt(gridSize); ++k) {
+                    for (let l = 0; l < Math.sqrt(gridSize); ++l) {
+                        if (board[(gridSqrt * i) + k][(gridSqrt * j) + l].possibilities.has(value)) {
+                            ++numCount;
+                            coords = [(gridSqrt * i) + k, (gridSqrt * j) + l];
+                            if (numCount == 2) {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                if (numCount == 1) {
+                    console.log(coords + " | " + value);
+                    console.log(board[coords[0]][coords[1]].possibilities);
+                    board[coords[0]][coords[1]].possibilities.size > 1 ? board[coords[0]][coords[1]].possibilities = new Set([value]) : null;
+                    //wait(20000);
+                }
+            });
+        }
     }
 }
 function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas) {
@@ -147,11 +196,14 @@ function waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, 
             updateLine(board, gridSize, false, y, delValue, unsolvedSquares);
             updateSquare(board, gridSize, [(Math.floor(x / Math.sqrt(gridSize)) * 3) + 1, (Math.floor(y / Math.sqrt(gridSize)) * 3) + 1], delValue, unsolvedSquares);
             yield drawBoard(board, gridSize, canvas, windowSize, true);
-            wait(500);
+            //wait(500);
         }
-        console.log("here");
         lineSingles(board, gridSize, true);
+        yield drawBoard(board, gridSize, canvas, windowSize, true);
         lineSingles(board, gridSize, false);
+        yield drawBoard(board, gridSize, canvas, windowSize, true);
+        boxSingles(board, gridSize);
+        yield drawBoard(board, gridSize, canvas, windowSize, true);
     });
 }
 export function solve(board, gridSize, windowSize, canvas) {
@@ -168,7 +220,9 @@ export function solve(board, gridSize, windowSize, canvas) {
             }
         }
         generateDegreesOfFreedom(board, gridSize, unsolvedSquares);
-        for (let i = 0; unsolvedSquares.size > 0 && i < 100; ++i) {
+        const maxIterations = 2000;
+        for (let i = 0; unsolvedSquares.size > 0 && i < maxIterations; ++i) {
+            console.log("Iterations: " + (i + 1) + "/" + maxIterations);
             yield waveFunctionCollapseStep(board, gridSize, unsolvedSquares, windowSize, canvas);
         }
     });
