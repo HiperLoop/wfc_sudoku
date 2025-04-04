@@ -10,8 +10,8 @@ let board:cell[][] = [[]];
 window.onload = function() {
     //board = populateBoard(gridSize);
     //board = test_one;
-    //board = cellBoardFromValues(easy);
-    board = cellBoardFromValues(medium);
+    board = cellBoardFromValues(easy);
+    //board = cellBoardFromValues(medium);
     //console.log("works");
     cnv = <HTMLCanvasElement> document.getElementById("myCanvas");
     cnv.addEventListener("mouseup", (event) => {solve(board, gridSize, [window.innerWidth, window.innerHeight], cnv); drawBoard(board, gridSize, cnv, [window.innerWidth, window.innerHeight], true)});
