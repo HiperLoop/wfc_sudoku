@@ -69,7 +69,7 @@ export async function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanv
                     //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                 }
                 else if(board[i][j].num != 0) {
-                    drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas, "#0000CC");
+                    drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas, board[i][j].given ? "#00CC00" : "#E81E63");
                 }
             }
         }
