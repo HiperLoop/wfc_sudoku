@@ -1,7 +1,7 @@
 import { resize_canvas, drawBoard } from "./canvas.js";
 import { populateBoard , cell } from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
-import { test_one , cellBoardFromValues , easy , medium } from "./tests.js";
+import { cellBoardFromValues , easy , medium } from "./tests.js";
 
 let cnv:HTMLCanvasElement;
 let gridSize = 9;
