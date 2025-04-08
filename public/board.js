@@ -1,4 +1,14 @@
-export function board_generateUnsolvedSquares() {
+export function board_generateUnsolvedSquares(board) {
+    for (let i = 0; i < board.gridSize; ++i) {
+        for (let j = 0; j < board.gridSize; ++j) {
+            if (board.grid[i][j].num == 0) {
+                board.unsolvedSquares.add((i * board.gridSize) + j);
+            }
+            else {
+                board.grid[i][j].possibilities = new Set;
+            }
+        }
+    }
 }
 export function board_random(gridSize) {
     let board = [];
