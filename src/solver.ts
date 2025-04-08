@@ -1,6 +1,7 @@
-import { board, cell } from "./board.js";
+import { board, board_generateUnsolvedSquares, cell } from "./board.js";
 import { drawBoard } from "./canvas.js";
 import { set_intersection , set_subtraction, set_union } from "./set_arithmetic.js";
+import { cellBoardFromValues , easy , medium } from "./tests.js";
 
 function getNumbersInLine(board:board, row:boolean, lineIndex:number) {
     let foundNumbers = new Set<number>();
@@ -199,15 +200,32 @@ function boxRows(board:board) {
     }
 }
 
-function inferenceChain(board:cell[][], gridSize:number, checkSquares:number[][]) {
+function inferenceChain(board:board, /* checkSquares:number[][] */) {
     let trySquare:number[] = [];
-    let tryBoards:cell[][][] = [];
-    for(let i = 0; checkSquares[i][0] == 2; ++i) {
-        
-    }
+    let tryBoards:board[] = [];
+    tryBoards[0] = {grid:board.grid, gridSize:board.gridSize, unsolvedSquares:board.unsolvedSquares};
+    board_generateUnsolvedSquares(tryBoards[0]);
+    generateDegreesOfFreedom(tryBoards[0]);
+    /* for(let i = 0; checkSquares[i][0] == 2; ++i) {
+        tryBoards[0] = {grid:board.grid, gridSize:board.gridSize, unsolvedSquares:board.unsolvedSquares};
+    } */
+   return tryBoards[0];
 }
 
-async function waveFunctionCollapseStep(board:board, windowSize:number[], canvas:HTMLCanvasElement) {
+function updateCell(board:board, coords:number[], value:number) {
+    board.grid[coords[0]][coords[1]].num = value;
+    console.log("pos:" + board.grid[coords[0]][coords[1]].possibilities.size)
+    console.log("val:" + value);
+    board.unsolvedSquares.delete((coords[0]*board.gridSize) + coords[1]);
+    
+    board.grid[coords[0]][coords[1]].possibilities = new Set<number>;
+    let delValue = new Set<number>([value]);
+    updateLine(board, true, coords[0], delValue);
+    updateLine(board, false, coords[1], delValue);
+    updateSquare(board, [(Math.floor(coords[0]/Math.sqrt(board.gridSize))*3)+1, (Math.floor(coords[1]/Math.sqrt(board.gridSize))*3)+1], delValue);
+}
+
+async function waveFunctionCollapseStep(board:board, windowSize:number[], canvas:HTMLCanvasElement, drawSteps:boolean=true) {
     let checkSquares:number[][] = [];
     if(board.unsolvedSquares.size == 0) {return 1;} //return if sudoku solved
     board.unsolvedSquares.forEach((value:number, key:number, set:Set<number>) => {checkSquares[value] = [board.grid[Math.floor(value/board.gridSize)][value % board.gridSize].possibilities.size, value]});
@@ -218,48 +236,31 @@ async function waveFunctionCollapseStep(board:board, windowSize:number[], canvas
         const y:number = checkSquares[i][1] % board.gridSize;
         let setValue:number = 0;
         board.grid[x][y].possibilities.forEach((value:number, key:number, set:Set<number>) => {setValue = value});
-        board.grid[x][y].num = setValue;
-        console.log("pos:" + board.grid[x][y].possibilities.size)
-        console.log("val:" + setValue);
-        board.unsolvedSquares.delete(checkSquares[i][1]);
-        
-        board.grid[x][y].possibilities = new Set<number>;
-        let delValue = new Set<number>([setValue]);
-        updateLine(board, true, x, delValue);
-        updateLine(board, false, y, delValue);
-        updateSquare(board, [(Math.floor(x/Math.sqrt(board.gridSize))*3)+1, (Math.floor(y/Math.sqrt(board.gridSize))*3)+1], delValue);
-        await drawBoard(board, canvas, windowSize, true);
+        updateCell(board, [x, y], setValue);
+        if(drawSteps) await drawBoard(board, canvas, windowSize, true);
         if(board.unsolvedSquares.size == 0) {return 1;} //return if sudoku solved
-        wait(500);
+        //wait(500);
     }
     lineSingles(board, true);
-    await drawBoard(board, canvas, windowSize, true);
+    if(drawSteps) await drawBoard(board, canvas, windowSize, true);
     //wait(500);
     lineSingles(board, false);
-    await drawBoard(board, canvas, windowSize, true);
+    if(drawSteps) await drawBoard(board, canvas, windowSize, true);
     //wait(500);
     boxSingles(board);
-    await drawBoard(board, canvas, windowSize, true);
+    if(drawSteps) await drawBoard(board, canvas, windowSize, true);
     //wait(500);
     boxRows(board);
-    await drawBoard(board, canvas, windowSize, true);
+    if(drawSteps) await drawBoard(board, canvas, windowSize, true);
     //wait(500);
     //wait(500000);
 }
 
 export async function solve(board:board, windowSize:number[], canvas:HTMLCanvasElement) {
-    for(let i = 0; i < board.gridSize; ++i) {
-        for(let j = 0; j < board.gridSize; ++j) {
-            if(board.grid[i][j].num == 0) {
-                board.unsolvedSquares.add((i*board.gridSize)+j);
-            }
-            else {board.grid[i][j].possibilities = new Set<number>;}
-        }
-    }
+    board_generateUnsolvedSquares(board);
     generateDegreesOfFreedom(board);
     await drawBoard(board, canvas, windowSize, true);
-    //wait(10000);
-
+    
     const maxIterations:number = 100;
     for(let i = 0; board.unsolvedSquares.size > 0 && i < maxIterations; ++i) {
         console.log("Iterations: " + (i+1) + "/" + maxIterations);

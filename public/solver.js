@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { board_generateUnsolvedSquares } from "./board.js";
 import { drawBoard } from "./canvas.js";
 import { set_intersection, set_subtraction, set_union } from "./set_arithmetic.js";
 function getNumbersInLine(board, row, lineIndex) {
@@ -212,14 +213,30 @@ function boxRows(board) {
         }
     }
 }
-function inferenceChain(board, gridSize, checkSquares) {
+function inferenceChain(board) {
     let trySquare = [];
     let tryBoards = [];
-    for (let i = 0; checkSquares[i][0] == 2; ++i) {
-    }
+    tryBoards[0] = { grid: board.grid, gridSize: board.gridSize, unsolvedSquares: board.unsolvedSquares };
+    board_generateUnsolvedSquares(tryBoards[0]);
+    generateDegreesOfFreedom(tryBoards[0]);
+    /* for(let i = 0; checkSquares[i][0] == 2; ++i) {
+        tryBoards[0] = {grid:board.grid, gridSize:board.gridSize, unsolvedSquares:board.unsolvedSquares};
+    } */
+    return tryBoards[0];
 }
-function waveFunctionCollapseStep(board, windowSize, canvas) {
-    return __awaiter(this, void 0, void 0, function* () {
+function updateCell(board, coords, value) {
+    board.grid[coords[0]][coords[1]].num = value;
+    console.log("pos:" + board.grid[coords[0]][coords[1]].possibilities.size);
+    console.log("val:" + value);
+    board.unsolvedSquares.delete((coords[0] * board.gridSize) + coords[1]);
+    board.grid[coords[0]][coords[1]].possibilities = new Set;
+    let delValue = new Set([value]);
+    updateLine(board, true, coords[0], delValue);
+    updateLine(board, false, coords[1], delValue);
+    updateSquare(board, [(Math.floor(coords[0] / Math.sqrt(board.gridSize)) * 3) + 1, (Math.floor(coords[1] / Math.sqrt(board.gridSize)) * 3) + 1], delValue);
+}
+function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
+    return __awaiter(this, arguments, void 0, function* (board, windowSize, canvas, drawSteps = true) {
         let checkSquares = [];
         if (board.unsolvedSquares.size == 0) {
             return 1;
@@ -231,51 +248,38 @@ function waveFunctionCollapseStep(board, windowSize, canvas) {
             const y = checkSquares[i][1] % board.gridSize;
             let setValue = 0;
             board.grid[x][y].possibilities.forEach((value, key, set) => { setValue = value; });
-            board.grid[x][y].num = setValue;
-            console.log("pos:" + board.grid[x][y].possibilities.size);
-            console.log("val:" + setValue);
-            board.unsolvedSquares.delete(checkSquares[i][1]);
-            board.grid[x][y].possibilities = new Set;
-            let delValue = new Set([setValue]);
-            updateLine(board, true, x, delValue);
-            updateLine(board, false, y, delValue);
-            updateSquare(board, [(Math.floor(x / Math.sqrt(board.gridSize)) * 3) + 1, (Math.floor(y / Math.sqrt(board.gridSize)) * 3) + 1], delValue);
-            yield drawBoard(board, canvas, windowSize, true);
+            updateCell(board, [x, y], setValue);
+            if (drawSteps)
+                yield drawBoard(board, canvas, windowSize, true);
             if (board.unsolvedSquares.size == 0) {
                 return 1;
             } //return if sudoku solved
-            wait(500);
+            //wait(500);
         }
         lineSingles(board, true);
-        yield drawBoard(board, canvas, windowSize, true);
+        if (drawSteps)
+            yield drawBoard(board, canvas, windowSize, true);
         //wait(500);
         lineSingles(board, false);
-        yield drawBoard(board, canvas, windowSize, true);
+        if (drawSteps)
+            yield drawBoard(board, canvas, windowSize, true);
         //wait(500);
         boxSingles(board);
-        yield drawBoard(board, canvas, windowSize, true);
+        if (drawSteps)
+            yield drawBoard(board, canvas, windowSize, true);
         //wait(500);
         boxRows(board);
-        yield drawBoard(board, canvas, windowSize, true);
+        if (drawSteps)
+            yield drawBoard(board, canvas, windowSize, true);
         //wait(500);
         //wait(500000);
     });
 }
 export function solve(board, windowSize, canvas) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (let i = 0; i < board.gridSize; ++i) {
-            for (let j = 0; j < board.gridSize; ++j) {
-                if (board.grid[i][j].num == 0) {
-                    board.unsolvedSquares.add((i * board.gridSize) + j);
-                }
-                else {
-                    board.grid[i][j].possibilities = new Set;
-                }
-            }
-        }
+        board_generateUnsolvedSquares(board);
         generateDegreesOfFreedom(board);
         yield drawBoard(board, canvas, windowSize, true);
-        //wait(10000);
         const maxIterations = 100;
         for (let i = 0; board.unsolvedSquares.size > 0 && i < maxIterations; ++i) {
             console.log("Iterations: " + (i + 1) + "/" + maxIterations);
