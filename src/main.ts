@@ -1,23 +1,25 @@
 import { resize_canvas, drawBoard } from "./canvas.js";
-import { populateBoard , cell } from "./board.js";
+import { board, cell } from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { cellBoardFromValues , easy , medium } from "./tests.js";
 
 let cnv:HTMLCanvasElement;
 let gridSize = 9;
-let board:cell[][] = [[]];
+let grid:cell[][] = [[]];
+let playBoard:board;
 
 window.onload = function() {
     //board = populateBoard(gridSize);
     //board = test_one;
-    board = cellBoardFromValues(easy);
+    grid = cellBoardFromValues(easy);
     //board = cellBoardFromValues(medium);
     //console.log("works");
+    playBoard = {grid:grid, gridSize:gridSize, unsolvedSquares:new Set<number>};
     cnv = <HTMLCanvasElement> document.getElementById("myCanvas");
-    cnv.addEventListener("mouseup", (event) => {solve(board, gridSize, [window.innerWidth, window.innerHeight], cnv); drawBoard(board, gridSize, cnv, [window.innerWidth, window.innerHeight], true)});
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize, board);
+    cnv.addEventListener("mouseup", (event) => {solve(playBoard, [window.innerWidth, window.innerHeight], cnv); drawBoard(playBoard, cnv, [window.innerWidth, window.innerHeight], true)});
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
 }
 
 window.onresize = function() {
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize, board);
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
 }

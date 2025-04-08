@@ -1,4 +1,6 @@
-export function populateBoard(gridSize) {
+export function board_generateUnsolvedSquares() {
+}
+export function board_random(gridSize) {
     let board = [];
     for (let i = 0; i < gridSize; ++i) {
         board[i] = [];

@@ -1,4 +1,4 @@
-import { cell } from "./board.js";
+import { board, cell } from "./board.js";
 
 export function isHigh(windowSize:number[]): boolean {
     return windowSize[1] > windowSize[0] ? true : false;
@@ -57,19 +57,19 @@ function drawNumber(numberToDraw:number, coords:number[], windowSize:number[], g
     }
 }
 
-export async function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanvasElement, windowSize:number[], df:boolean=false) {
+export async function drawBoard(board:board, canvas:HTMLCanvasElement, windowSize:number[], df:boolean=false) {
     return await new Promise<boolean>((resolve) => {
-        drawGrid(gridSize, windowSize, canvas);
-        for(let i = 0; i < gridSize; ++i) {
-            for(let j = 0; j < gridSize; ++j) {
-                if(df && board[i][j].possibilities.size > 0) {
-                    board[i][j].possibilities.forEach((value:number) => {
-                        drawNumber(value, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
+        drawGrid(board.gridSize, windowSize, canvas);
+        for(let i = 0; i < board.gridSize; ++i) {
+            for(let j = 0; j < board.gridSize; ++j) {
+                if(df && board.grid[i][j].possibilities.size > 0) {
+                    board.grid[i][j].possibilities.forEach((value:number) => {
+                        drawNumber(value, [j, i], windowSize, board.gridSize, canvas, "#FF0000", true);
                     });
                     //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                 }
-                else if(board[i][j].num != 0) {
-                    drawNumber(board[i][j].num, [j, i], windowSize, gridSize, canvas, board[i][j].given ? "#00CC00" : "#E81E63");
+                else if(board.grid[i][j].num != 0) {
+                    drawNumber(board.grid[i][j].num, [j, i], windowSize, board.gridSize, canvas, board.grid[i][j].given ? "#00CC00" : "#E81E63");
                 }
             }
         }
@@ -79,7 +79,7 @@ export async function drawBoard(board:cell[][], gridSize:number, canvas:HTMLCanv
     });
 }
 
-export function resize_canvas(windowSize:number[], canvas:HTMLCanvasElement, gridSize:number, board:cell[][]) {
+export function resize_canvas(windowSize:number[], canvas:HTMLCanvasElement, board:board) {
     resizeCanvas(windowSize, canvas);
-    drawBoard(board, gridSize, canvas, windowSize);
+    drawBoard(board, canvas, windowSize);
 }

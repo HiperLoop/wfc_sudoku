@@ -5,7 +5,17 @@ export type cell = {
     given:boolean
 };
 
-export function populateBoard(gridSize:number) {
+export type board = {
+    grid:cell[][],
+    gridSize:number,
+    unsolvedSquares:Set<number>,
+};
+
+export function board_generateUnsolvedSquares() {
+    
+}
+
+export function board_random(gridSize:number) {
     let board:cell[][] = [];
     for(let i = 0; i < gridSize; ++i) {
         board[i] = [];
