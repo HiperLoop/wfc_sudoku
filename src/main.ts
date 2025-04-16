@@ -1,7 +1,7 @@
 import { resize_canvas, drawBoard } from "./canvas.js";
 import { board, cell } from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
-import { cellBoardFromValues , easy , medium } from "./tests.js";
+import { cellBoardFromValues , easy , medium, sofia, shion, test_one } from "./tests.js";
 
 let cnv:HTMLCanvasElement;
 let gridSize = 9;
@@ -10,9 +10,11 @@ let playBoard:board;
 
 window.onload = function() {
     //board = populateBoard(gridSize);
-    //board = test_one;
-    grid = cellBoardFromValues(easy);
-    //board = cellBoardFromValues(medium);
+    grid = cellBoardFromValues(test_one);
+    //grid = cellBoardFromValues(easy);
+    //grid= cellBoardFromValues(medium);
+    //grid= cellBoardFromValues(sofia[0]);
+    //grid= cellBoardFromValues(shion);
     //console.log("works");
     playBoard = {grid:grid, gridSize:gridSize, unsolvedSquares:new Set<number>};
     cnv = <HTMLCanvasElement> document.getElementById("myCanvas");
