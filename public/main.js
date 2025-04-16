@@ -1,15 +1,16 @@
 import { resize_canvas, drawBoard } from "./canvas.js";
 import { solve } from "./solver.js";
-import { cellBoardFromValues, test_one } from "./tests.js";
+import { cellBoardFromValues, als } from "./tests.js";
 let cnv;
 let gridSize = 9;
 let grid = [[]];
 let playBoard;
 window.onload = function () {
     //board = populateBoard(gridSize);
-    grid = cellBoardFromValues(test_one);
+    //grid = cellBoardFromValues(test_one);
     //grid = cellBoardFromValues(easy);
     //grid= cellBoardFromValues(medium);
+    grid = cellBoardFromValues(als);
     //grid= cellBoardFromValues(sofia[0]);
     //grid= cellBoardFromValues(shion);
     //console.log("works");
