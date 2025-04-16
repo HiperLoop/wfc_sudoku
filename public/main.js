@@ -1,23 +1,19 @@
-import { resize_canvas, drawBoard } from "./canvas.js";
-import { solve } from "./solver.js";
-import { cellBoardFromValues, medium } from "./tests.js";
+import { resize_canvas } from "./canvas.js";
+import { cellBoardFromValues } from "./board.js";
+import { medium } from "./tests.js";
+import { eventListeners_init } from "./event_listeners.js";
 let cnv;
 let gridSize = 9;
 let grid = [[]];
 let playBoard;
 window.onload = function () {
     //board = populateBoard(gridSize);
-    //grid = cellBoardFromValues(test_one);
-    //grid = cellBoardFromValues(easy);
     grid = cellBoardFromValues(medium);
-    //grid= cellBoardFromValues(als);
     //grid= cellBoardFromValues(twoWays);
     //grid= cellBoardFromValues(sofia[0]);
-    //grid= cellBoardFromValues(shion);
-    //console.log("works");
     playBoard = { grid: grid, gridSize: gridSize, unsolvedSquares: new Set };
     cnv = document.getElementById("myCanvas");
-    cnv.addEventListener("mouseup", (event) => { solve(playBoard, [window.innerWidth, window.innerHeight], cnv); drawBoard(playBoard, cnv, [window.innerWidth, window.innerHeight], true); });
+    eventListeners_init(cnv, playBoard);
     resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
 };
 window.onresize = function () {
