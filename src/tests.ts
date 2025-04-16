@@ -123,14 +123,3 @@ export const shion:number[][] = [
     [0, 0, 0, 6, 3, 0, 0, 7, 0],
     [9, 0, 0, 8, 0, 0, 4, 0, 0],
     [0, 7, 0, 0, 1, 4, 0, 0, 3]];
-
-export function cellBoardFromValues(values:number[][]) {
-    let board:cell[][] = [];
-    for(let i = 0; i < values[0].length; ++i) {
-        board[i] = [];
-        for(let j = 0; j < values[0].length; ++j) {
-            board[i][j] = {num:values[i][j], possibilities:new Set<number>([1, 2, 3, 4, 5, 6, 7, 8, 9]), selected:false, given:values[i][j] > 0};
-        }
-    }
-    return board;
-}
