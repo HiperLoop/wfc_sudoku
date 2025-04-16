@@ -1,7 +1,7 @@
-import { board, board_generateUnsolvedSquares, cell } from "./board.js";
+import { board, board_generateUnsolvedSquares, cell, cellBoardFromValues } from "./board.js";
 import { drawBoard } from "./canvas.js";
 import { set_intersection , set_subtraction, set_union } from "./set_arithmetic.js";
-import { cellBoardFromValues , easy , medium } from "./tests.js";
+import { easy , medium } from "./tests.js";
 
 function getNumbersInLine(board:board, row:boolean, lineIndex:number) {
     let foundNumbers = new Set<number>();
