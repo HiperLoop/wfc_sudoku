@@ -17,7 +17,7 @@ export function board_generateUnsolvedSquares(board:board) {
             if(board.grid[i][j].num == 0) {
                 board.unsolvedSquares.add((i*board.gridSize)+j);
             }
-            else {board.grid[i][j].possibilities = new Set<number>;}
+            else {board.grid[i][j].possibilities = new Set<number>([board.grid[i][j].num]);}
         }
     }
 }

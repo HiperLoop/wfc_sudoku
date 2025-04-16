@@ -5,7 +5,7 @@ export function board_generateUnsolvedSquares(board) {
                 board.unsolvedSquares.add((i * board.gridSize) + j);
             }
             else {
-                board.grid[i][j].possibilities = new Set;
+                board.grid[i][j].possibilities = new Set([board.grid[i][j].num]);
             }
         }
     }
