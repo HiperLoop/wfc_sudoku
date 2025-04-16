@@ -59,19 +59,26 @@ function drawNumber(numberToDraw, coords, windowSize, gridSize, canvas, colour, 
     }
 }
 export function drawBoard(board_1, canvas_1, windowSize_1) {
-    return __awaiter(this, arguments, void 0, function* (board, canvas, windowSize, df = false) {
+    return __awaiter(this, arguments, void 0, function* (board, canvas, windowSize, df = false, onlyDF = false) {
         return yield new Promise((resolve) => {
             drawGrid(board.gridSize, windowSize, canvas);
             for (let i = 0; i < board.gridSize; ++i) {
                 for (let j = 0; j < board.gridSize; ++j) {
-                    if (df && board.grid[i][j].possibilities.size > 0) {
+                    if (onlyDF) {
                         board.grid[i][j].possibilities.forEach((value) => {
                             drawNumber(value, [j, i], windowSize, board.gridSize, canvas, "#FF0000", true);
                         });
-                        //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                     }
-                    else if (board.grid[i][j].num != 0) {
-                        drawNumber(board.grid[i][j].num, [j, i], windowSize, board.gridSize, canvas, board.grid[i][j].given ? "#00CC00" : "#E81E63");
+                    else {
+                        if (df && board.grid[i][j].num == 0) {
+                            board.grid[i][j].possibilities.forEach((value) => {
+                                drawNumber(value, [j, i], windowSize, board.gridSize, canvas, "#FF0000", true);
+                            });
+                            //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
+                        }
+                        else if (board.grid[i][j].num != 0) {
+                            drawNumber(board.grid[i][j].num, [j, i], windowSize, board.gridSize, canvas, board.grid[i][j].given ? "#00CC00" : "#E81E63");
+                        }
                     }
                 }
             }
