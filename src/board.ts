@@ -11,6 +11,28 @@ export type board = {
     unsolvedSquares:Set<number>,
 };
 
+export const empty_grid = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]];
+
+export function cellBoardFromValues(values:number[][]) {
+    let board:cell[][] = [];
+    for(let i = 0; i < values[0].length; ++i) {
+        board[i] = [];
+        for(let j = 0; j < values[0].length; ++j) {
+            board[i][j] = {num:values[i][j], possibilities:new Set<number>([1, 2, 3, 4, 5, 6, 7, 8, 9]), selected:false, given:values[i][j] > 0};
+        }
+    }
+    return board;
+}
+
 export function board_generateUnsolvedSquares(board:board) {
     for(let i = 0; i < board.gridSize; ++i) {
         for(let j = 0; j < board.gridSize; ++j) {
