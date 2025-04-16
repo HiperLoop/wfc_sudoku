@@ -370,7 +370,7 @@ export async function solve(board:board, windowSize:number[], canvas:HTMLCanvasE
     for(let i = 0; board.unsolvedSquares.size > 0 && i < maxIterations; ++i) {
         console.log("Iterations: " + (i+1) + "/" + maxIterations);
         if(await waveFunctionCollapseStep(board, windowSize, canvas) == 1) {
-            console.log("Sudoku solved!");
+            console.log(`Sudoku solved in ${i} iterations!`);
             await drawBoard(board, canvas, windowSize, true, false);
             return 1;
         }

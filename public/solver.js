@@ -389,7 +389,7 @@ export function solve(board, windowSize, canvas) {
         for (let i = 0; board.unsolvedSquares.size > 0 && i < maxIterations; ++i) {
             console.log("Iterations: " + (i + 1) + "/" + maxIterations);
             if ((yield waveFunctionCollapseStep(board, windowSize, canvas)) == 1) {
-                console.log("Sudoku solved!");
+                console.log(`Sudoku solved in ${i} iterations!`);
                 yield drawBoard(board, canvas, windowSize, true, false);
                 return 1;
             }
