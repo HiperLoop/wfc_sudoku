@@ -66,7 +66,7 @@ function drawNumber(numberToDraw, coords, gridSize, canvas, colour, possibilitie
         }
         //cell value
         else {
-            ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize);
+            numberToDraw ? ctx.fillText(numberToDraw.toString(), (coords[0] + 0.25) * cellSize, (coords[1] + 0.8) * cellSize) : null;
         }
     }
 }
@@ -88,7 +88,7 @@ export function drawSelected(board, canvas) {
 }
 //draws grid, selected cells, numbers, possibilites
 export function drawBoard(board_1, canvas_1, windowSize_1) {
-    return __awaiter(this, arguments, void 0, function* (board, canvas, windowSize, df = false, onlyDF = false) {
+    return __awaiter(this, arguments, void 0, function* (board, canvas, windowSize, df = false, onlyDF = false, onlyGiven = false) {
         return yield new Promise((resolve) => {
             //grid lines and selected cells
             drawGrid(board, windowSize, canvas);
@@ -110,8 +110,13 @@ export function drawBoard(board_1, canvas_1, windowSize_1) {
                             //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                         }
                         //only values
-                        else if (board.grid[i][j].num != 0) {
+                        else if (board.grid[i][j].num != 0 && !onlyGiven) {
                             drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, board.grid[i][j].given ? "#00CC00" : "#E81E63");
+                        }
+                        else if (onlyGiven && board.grid[i][j].num != 0) {
+                            if (board.grid[i][j].given) {
+                                drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, "#00CC00");
+                            }
                         }
                     }
                 }
