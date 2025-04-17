@@ -78,3 +78,43 @@ export function board_selectCell(board:board, coords:number[], cnv:HTMLCanvasEle
     }
     drawBoard(board, cnv, windowSize);
 }
+
+export function board_deselectAll(board:board, cnv:HTMLCanvasElement, windowSize:number[]) {
+    board.selectedCells.forEach((value:number) => {board.grid[Math.floor(value/board.gridSize)][value%board.gridSize].selected = false;});
+    board.selectedCells = new Set<number>;
+    drawBoard(board, cnv, windowSize);
+}
+
+export function board_lockGiven(board:board) {
+    for(let i = 0; i < board.gridSize; ++i) {
+        for(let j = 0; j < board.gridSize; ++j) {
+            if(board.grid[i][j].num != 0) {
+                board.grid[i][j].given = true;
+            }
+        }
+    }
+}
+
+//converts string to board
+export function board_stringToGrid(inputString:String) {
+    var numbers:number[][] = empty_grid;
+    //worng string length
+    if(inputString.length != 81) {return [numbers, [[inputString.length]]];}
+
+    //convert string to grid
+    for(let i = 0; i < inputString.length; ++i) {
+        numbers[Math.floor(Number(inputString[i])/numbers[0].length)][Number(inputString[i])%numbers[0].length] = inputString[i] == "." ? 0 : Number(inputString[i]);
+    }
+    return [numbers, [[-1]]];
+}
+
+//converts board to string
+export function board_boardToString(board:board) {
+    var outputString:String = "";
+    for(let i = 0; i < board.gridSize; ++i) {
+        for(let j = 0; j < board.gridSize; ++j) {
+            outputString += board.grid[i][j].num.toString();
+        }
+    }
+    return outputString;
+}
