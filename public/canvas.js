@@ -9,6 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 //offset from edges (both sides together)
 export const CANVAS_OFFSET = 60;
+export const whitePalette = {
+    window: "#FFFFFF",
+    buttons_background: "#CCCCCC",
+    font: "#000000",
+    slider: "#0000FF",
+    background: "#FFFFFF",
+    gridLines: "#000000",
+    selected: "#FFFF00",
+    given: "#00CC00",
+    filled: "#E81E63",
+    possibilities: "#FF0000"
+};
+export const blackPalette = {
+    window: "#111111",
+    buttons_background: "#333333",
+    font: "#FF0000",
+    slider: "#FF0000",
+    background: "#000000",
+    gridLines: "#FFFFFF",
+    selected: "#FFFF00",
+    given: "#00CC00",
+    filled: "#E81E63",
+    possibilities: "#FF0000"
+};
+export const DEFAULT_PALETTE = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? blackPalette : whitePalette;
+export var currentPalette = DEFAULT_PALETTE;
 //return wheather window is higher than wide (pohone mode)
 export function isHigh(windowSize) {
     return windowSize[1] > windowSize[0] ? true : false;
@@ -28,8 +54,8 @@ export function drawGrid(board, windowSize, canvas) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
         //clear out canvas
-        ctx.strokeStyle = "#000000";
-        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = currentPalette.gridLines;
+        ctx.fillStyle = currentPalette.background;
         const size = maxSize(windowSize);
         ctx.fillRect(0, 0, size, size);
         drawSelected(board, canvas); //draw selected cells
@@ -97,7 +123,7 @@ export function drawBoard(board_1, canvas_1, windowSize_1) {
                     //only possiblities
                     if (onlyDF) {
                         board.grid[i][j].possibilities.forEach((value) => {
-                            drawNumber(value, [j, i], board.gridSize, canvas, "#FF0000", true);
+                            drawNumber(value, [j, i], board.gridSize, canvas, currentPalette.possibilities, true);
                         });
                     }
                     //values and possibilities
@@ -105,17 +131,17 @@ export function drawBoard(board_1, canvas_1, windowSize_1) {
                         //possibilities in empty cells
                         if (df && board.grid[i][j].num == 0) {
                             board.grid[i][j].possibilities.forEach((value) => {
-                                drawNumber(value, [j, i], board.gridSize, canvas, "#FF0000", true);
+                                drawNumber(value, [j, i], board.gridSize, canvas, currentPalette.possibilities, true);
                             });
                             //drawNumber(board[i][j].possibilities.size, [j, i], windowSize, gridSize, canvas, "#FF0000", true);
                         }
                         //only values
                         else if (board.grid[i][j].num != 0 && !onlyGiven) {
-                            drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, board.grid[i][j].given ? "#00CC00" : "#E81E63");
+                            drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, board.grid[i][j].given ? currentPalette.given : currentPalette.filled);
                         }
                         else if (onlyGiven && board.grid[i][j].num != 0) {
                             if (board.grid[i][j].given) {
-                                drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, "#00CC00");
+                                drawNumber(board.grid[i][j].num, [j, i], board.gridSize, canvas, currentPalette.given);
                             }
                         }
                     }
@@ -150,3 +176,19 @@ export function coordsFromClick(event, gridSize, canvas, windowSize) {
 export const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
 };
+export function colourInit() {
+    document.body.style.backgroundColor = currentPalette.window;
+    const elements = document.getElementsByClassName("colour_one");
+    Array.from(elements).forEach(element => {
+        element.style.backgroundColor = currentPalette.buttons_background;
+        element.style.color = currentPalette.font;
+    });
+    /* const choices = document.getElementsByClassName("colour_two");
+    Array.from(choices).forEach(element => {
+        (element as HTMLElement).style.backgroundColor = currentPalette.slider;
+    }); */
+    const slider = document.getElementById("difficulty");
+    slider ? slider.style.color = currentPalette.slider : null;
+    const diffDisplay = document.getElementById("diff");
+    diffDisplay ? diffDisplay.style.color = currentPalette.font : null;
+}
