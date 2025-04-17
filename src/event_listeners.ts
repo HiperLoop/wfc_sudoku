@@ -1,6 +1,6 @@
 import { easy, medium, als, shion } from "./tests.js";
 import { coordsFromClick, copyToClipboard, drawBoard } from "./canvas.js";
-import { board, board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
+import { board, board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_givenGrid, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
 
@@ -84,9 +84,10 @@ export function eventListeners_init(cnv:HTMLCanvasElement, board:board, windowSi
     //generate new sudoku
     const generate_button = document.getElementById("generate_button");
     generate_button ? generate_button.addEventListener("click", async (event) => {
-        board = await generateBoard(board.gridSize, Number(slider.value), [window.innerWidth, window.innerHeight], cnv);
+        board = await generateBoard(board.gridSize, Number(slider.value), windowSize, cnv);
         board = await fixBoardToFitDifficulty(board, Number(slider.value), windowSize, cnv);
-        await drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false, false, true);
+        board = board_givenGrid(board);
+        await drawBoard(board, cnv, windowSize);
     }) : console.error("Generate event listener failed!");
 
     //keyboard

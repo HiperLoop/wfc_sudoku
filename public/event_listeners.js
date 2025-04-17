@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { easy, medium, als } from "./tests.js";
 import { coordsFromClick, copyToClipboard, drawBoard } from "./canvas.js";
-import { board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid } from "./board.js";
+import { board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_givenGrid, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid } from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
 //initializes all event listeners for user input
@@ -89,9 +89,10 @@ export function eventListeners_init(cnv, board, windowSize) {
     //generate new sudoku
     const generate_button = document.getElementById("generate_button");
     generate_button ? generate_button.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
-        board = yield generateBoard(board.gridSize, Number(slider.value), [window.innerWidth, window.innerHeight], cnv);
+        board = yield generateBoard(board.gridSize, Number(slider.value), windowSize, cnv);
         board = yield fixBoardToFitDifficulty(board, Number(slider.value), windowSize, cnv);
-        yield drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false, false, true);
+        board = board_givenGrid(board);
+        yield drawBoard(board, cnv, windowSize);
     })) : console.error("Generate event listener failed!");
     //keyboard
     window.addEventListener("keydown", function (event) {
