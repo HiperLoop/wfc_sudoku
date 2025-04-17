@@ -42,6 +42,19 @@ export const blackPalette:colourPalette = {
     possibilities:"#FF0000"
 };
 
+export const traditionalPalette:colourPalette = {
+    window:"#FFFFFF",
+    buttons_background:"#CCCCCC",
+    font:"#000000",
+    slider:"#0000FF",
+    background:"#FFFFFF",
+    gridLines:"#000000",
+    selected:"#00FF00",
+    given:"#000000",
+    filled:"#0033FF",
+    possibilities:"#FF0000"
+};
+
 export const DEFAULT_PALETTE = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? blackPalette : whitePalette;
 
 export var currentPalette:colourPalette = DEFAULT_PALETTE;

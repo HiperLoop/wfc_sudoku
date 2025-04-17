@@ -33,6 +33,18 @@ export const blackPalette = {
     filled: "#E81E63",
     possibilities: "#FF0000"
 };
+export const traditionalPalette = {
+    window: "#FFFFFF",
+    buttons_background: "#CCCCCC",
+    font: "#000000",
+    slider: "#0000FF",
+    background: "#FFFFFF",
+    gridLines: "#000000",
+    selected: "#00FF00",
+    given: "#000000",
+    filled: "#0033FF",
+    possibilities: "#FF0000"
+};
 export const DEFAULT_PALETTE = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? blackPalette : whitePalette;
 export var currentPalette = DEFAULT_PALETTE;
 //return wheather window is higher than wide (pohone mode)
