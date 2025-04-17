@@ -1,4 +1,4 @@
-import { resize_canvas } from "./canvas.js";
+import { resize_canvas, colourInit } from "./canvas.js";
 import { cellBoardFromValues } from "./board.js";
 import { medium } from "./tests.js";
 import { eventListeners_init } from "./event_listeners.js";
@@ -14,6 +14,7 @@ window.onload = function () {
     playBoard = { grid: grid, gridSize: gridSize, unsolvedSquares: new Set, selectedCells: new Set }; //create board
     cnv = document.getElementById("myCanvas");
     eventListeners_init(cnv, playBoard, [window.innerWidth, window.innerHeight]); //Initialise event listeners for user input handling
+    colourInit(); //set colours for the page
     resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard); //resize canvas and draw grid
 };
 window.onresize = function () {
