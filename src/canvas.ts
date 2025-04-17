@@ -145,3 +145,7 @@ export function coordsFromClick(event:MouseEvent, gridSize:number, canvas:HTMLCa
 
     return [Math.floor(clickY/cellSize), Math.floor(clickX/cellSize)];
 }
+
+export const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+};

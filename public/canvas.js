@@ -142,3 +142,6 @@ export function coordsFromClick(event, gridSize, canvas, windowSize) {
     const cellSize = canvas.height / gridSize;
     return [Math.floor(clickY / cellSize), Math.floor(clickX / cellSize)];
 }
+export const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+};
