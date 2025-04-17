@@ -119,3 +119,33 @@ export function board_boardToString(board:board, onlyGiven:boolean=false) {
     }
     return outputString;
 }
+
+export function board_getGivenSquares(board:board, inverse:boolean=false) {
+    let output:Set<number> = new Set<number>;
+    for(let i = 0; i < board.gridSize; ++i) {
+        for(let j = 0; j < board.gridSize; ++j) {
+            if(inverse) {
+                if(!board.grid[i][j].given) {
+                    output.add((i*board.gridSize)+j);
+                }
+            }
+            else {
+                if(board.grid[i][j].given) {
+                    output.add((i*board.gridSize)+j);
+                }
+            }
+        }
+    }
+    return output;
+}
+
+export function board_givenGrid(board:board) {
+    let output:number[][] = [];
+    for(let i = 0; i < board.gridSize; ++i) {
+        output[i] = [];
+        for(let j = 0; j < board.gridSize; ++j) {
+            output[i][j] = board.grid[i][j].given ? board.grid[i][j].num : 0;
+        }
+    }
+    return {grid:cellBoardFromValues(output), gridSize:board.gridSize, unsolvedSquares:new Set<number>, selectedCells:new Set<number>};
+}

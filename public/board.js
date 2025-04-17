@@ -102,3 +102,31 @@ export function board_boardToString(board, onlyGiven = false) {
     }
     return outputString;
 }
+export function board_getGivenSquares(board, inverse = false) {
+    let output = new Set;
+    for (let i = 0; i < board.gridSize; ++i) {
+        for (let j = 0; j < board.gridSize; ++j) {
+            if (inverse) {
+                if (!board.grid[i][j].given) {
+                    output.add((i * board.gridSize) + j);
+                }
+            }
+            else {
+                if (board.grid[i][j].given) {
+                    output.add((i * board.gridSize) + j);
+                }
+            }
+        }
+    }
+    return output;
+}
+export function board_givenGrid(board) {
+    let output = [];
+    for (let i = 0; i < board.gridSize; ++i) {
+        output[i] = [];
+        for (let j = 0; j < board.gridSize; ++j) {
+            output[i][j] = board.grid[i][j].given ? board.grid[i][j].num : 0;
+        }
+    }
+    return { grid: cellBoardFromValues(output), gridSize: board.gridSize, unsolvedSquares: new Set, selectedCells: new Set };
+}
