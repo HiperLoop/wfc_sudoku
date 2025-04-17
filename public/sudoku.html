@@ -6,24 +6,24 @@
         <script type ="module" src="main.js"></script>
     </head>
     <body>
-        <button id="solve_button" type="button">Solve</button>
-        <button id="clear_button" type="button">Clear</button>
-        <button id="load_button" type="button">Load</button>
-        <select id="load_options">
+        <button id="solve_button" type="button" class="colour_one">Solve</button>
+        <button id="clear_button" type="button" class="colour_one">Clear</button>
+        <button id="load_button" type="button" class="colour_one">Load</button>
+        <select id="load_options" class="colour_one" class="colour_two">
             <option value="0">Easy</option>
             <option value="1">Medium</option>
             <option value="2">ALS</option>
             <option value="3">Paste string</option>
         </select>
-        <input type="text" id="PGN" style='visibility:hidden'>
-        <button id="copy_button" type="button">Copy sudoku</button>
-        <select id="givenSelector">
+        <input type="text" id="PGN" style='visibility:hidden' class="colour_one">
+        <button id="copy_button" type="button" class="colour_one">Copy sudoku</button>
+        <select id="givenSelector" class="colour_one" class="colour_two">
             <option value="0">Whole Sudoku</option>
             <option value="1">Starting numbers</option>
         </select>
-        <button id="generate_button" type="button">Generate new</button>
+        <button id="generate_button" type="button" class="colour_one">Generate new</button>
         <input type="range" min="0" max="127" value="63" class="slider" id="difficulty">
-        <span>Difficulty: <span id="diffValue"></span></span>
+        <span id="diff">Difficulty: <span id="diffValue"></span></span>
         <canvas id="myCanvas" width="100" height="100"></canvas>
     </body>
 </html>
