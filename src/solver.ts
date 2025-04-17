@@ -218,7 +218,7 @@ async function inferenceChain(board:board, coords:number[], windowSize:number[],
         }
     }
     for(let j = 0; j < checks; ++j) {
-        tryBoards[j] = {grid:gridCopy[j], gridSize:board.gridSize, unsolvedSquares:new Set<number>(board.unsolvedSquares)};
+        tryBoards[j] = {grid:gridCopy[j], gridSize:board.gridSize, unsolvedSquares:new Set<number>(board.unsolvedSquares), selectedCells:new Set<number>};
     }
     let setValue:number[] = [];
     let count = 0;

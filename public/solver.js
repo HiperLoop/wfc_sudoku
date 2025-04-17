@@ -232,7 +232,7 @@ function inferenceChain(board, coords, windowSize, canvas) {
             }
         }
         for (let j = 0; j < checks; ++j) {
-            tryBoards[j] = { grid: gridCopy[j], gridSize: board.gridSize, unsolvedSquares: new Set(board.unsolvedSquares) };
+            tryBoards[j] = { grid: gridCopy[j], gridSize: board.gridSize, unsolvedSquares: new Set(board.unsolvedSquares), selectedCells: new Set };
         }
         let setValue = [];
         let count = 0;
