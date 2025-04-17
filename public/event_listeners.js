@@ -1,7 +1,17 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { easy, medium, als } from "./tests.js";
 import { coordsFromClick, copyToClipboard, drawBoard } from "./canvas.js";
-import { board_boardToString, board_deselectAll, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid } from "./board.js";
-import { solve } from "./solver.js";
+import { board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid } from "./board.js";
+import { generateDegreesOfFreedom, solve } from "./solver.js";
+import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
 //initializes all event listeners for user input
 export function eventListeners_init(cnv, board, windowSize) {
     //canvas
@@ -15,7 +25,15 @@ export function eventListeners_init(cnv, board, windowSize) {
     const maxSolverIterations = 10;
     const useInference = true;
     const solve_button = document.getElementById("solve_button");
-    solve_button ? solve_button.addEventListener("click", (event) => { board_lockGiven(board); solve(board, [window.innerWidth, window.innerHeight], cnv, maxSolverIterations, useInference); drawBoard(board, cnv, [window.innerWidth, window.innerHeight], true); }) : console.error("Solve event listener failed!");
+    solve_button ? solve_button.addEventListener("click", (event) => {
+        board_generateUnsolvedSquares(board);
+        generateDegreesOfFreedom(board);
+        if (board.unsolvedSquares.size > 0) {
+            board_lockGiven(board);
+            solve(board, [window.innerWidth, window.innerHeight], cnv, maxSolverIterations, true, useInference);
+        }
+        drawBoard(board, cnv, [window.innerWidth, window.innerHeight], true);
+    }) : console.error("Solve event listener failed!");
     //clear
     const clear_button = document.getElementById("clear_button");
     clear_button ? clear_button.addEventListener("click", (event) => { board.grid = cellBoardFromValues(empty_grid); drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false); }) : console.error("Clear event listener failed!");
@@ -61,9 +79,27 @@ export function eventListeners_init(cnv, board, windowSize) {
         copyToClipboard(boardString);
         alert(`Sudoku string copied to clipboard!`);
     }) : console.error("Copy event listener failed!");
+    //adjust generator difficulty
+    const slider = document.getElementById("difficulty");
+    const output = document.getElementById("diffValue");
+    slider && output ? output.innerText = slider.value : null;
+    slider && output ? slider.addEventListener("input", (event) => {
+        output.innerText = slider.value;
+    }) : console.error("Difficulty slider listener failed!");
+    //generate new sudoku
+    const generate_button = document.getElementById("generate_button");
+    generate_button ? generate_button.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
+        board = yield generateBoard(board.gridSize, Number(slider.value), [window.innerWidth, window.innerHeight], cnv);
+        board = yield fixBoardToFitDifficulty(board, Number(slider.value), windowSize, cnv);
+        yield drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false, false, true);
+    })) : console.error("Generate event listener failed!");
     //keyboard
     window.addEventListener("keydown", function (event) {
         var num = Number(event.key);
+        if (event.key == "S" || event.key == "s") {
+            drawBoard(board, cnv, windowSize);
+            return;
+        }
         //removal of number
         if (event.key == "Delete" || event.key == "Backspace") {
             num = 0;
@@ -75,7 +111,9 @@ export function eventListeners_init(cnv, board, windowSize) {
                 //if number was given, it cannot be changed
                 board.grid[Math.floor(value / board.gridSize)][value % board.gridSize].given ? null : board.grid[Math.floor(value / board.gridSize)][value % board.gridSize].num = num;
             });
+            if (board.selectedCells.size > 0) {
+                drawBoard(board, cnv, windowSize);
+            }
         }
-        drawBoard(board, cnv, windowSize);
     }, true);
 }
