@@ -25,6 +25,7 @@ export const empty_grid = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
+//generates a baord element from a 2d array of numbers
 export function cellBoardFromValues(values:number[][]) {
     let board:cell[][] = [];
     for(let i = 0; i < values[0].length; ++i) {
@@ -36,6 +37,8 @@ export function cellBoardFromValues(values:number[][]) {
     return board;
 }
 
+//populates board:unsolvedSquares with coordinates of unsolved cells
+//sets the possibilities of solved squares to just the solved number
 export function board_generateUnsolvedSquares(board:board) {
     for(let i = 0; i < board.gridSize; ++i) {
         for(let j = 0; j < board.gridSize; ++j) {
@@ -47,6 +50,7 @@ export function board_generateUnsolvedSquares(board:board) {
     }
 }
 
+//returns a random board (not necessarily valid sudoku)
 export function board_random(gridSize:number) {
     let board:cell[][] = [];
     for(let i = 0; i < gridSize; ++i) {
@@ -62,6 +66,7 @@ export function board_random(gridSize:number) {
     return board;
 }
 
+//modifies the board:selectedCells and board:grid:selected properties to indicated user selected cells -> draws them
 export function board_selectCell(board:board, coords:number[], cnv:HTMLCanvasElement, windowSize:number[], ctrl:boolean) {
     board.grid[coords[0]][coords[1]].selected = !board.grid[coords[0]][coords[1]].selected;
     if(ctrl) {
@@ -72,26 +77,4 @@ export function board_selectCell(board:board, coords:number[], cnv:HTMLCanvasEle
         board.selectedCells = new Set<number>(board.grid[coords[0]][coords[1]].selected ? [(board.gridSize * coords[0]) + coords[1]] : null);
     }
     drawBoard(board, cnv, windowSize);
-}
-
-export function keyboardInput_init(board:board, cnv:HTMLCanvasElement, windowSize:number[]) {
-    window.addEventListener("keydown", function (event) {
-        if (event.defaultPrevented) {
-          return; // Do nothing if the event was already processed
-        }
-
-        console.log("inside:");
-        console.log(board.selectedCells);
-        const num:number = Number(event.key);
-        console.log(num);
-        if(num > 0 && num <= 9) {
-            board.selectedCells.forEach((value:number) => {
-                board.grid[Math.floor(value/board.gridSize)][value%board.gridSize].num = num;
-            });
-        }
-      
-        // Cancel the default action to avoid it being handled twice
-        event.preventDefault();
-        drawBoard(board, cnv, windowSize);
-      }, true);
 }
