@@ -14,9 +14,9 @@ window.onload = function() {
     grid= cellBoardFromValues(medium);
     //grid= cellBoardFromValues(twoWays);
     //grid= cellBoardFromValues(sofia[0]);
-    playBoard = {grid:grid, gridSize:gridSize, unsolvedSquares:new Set<number>};
+    playBoard = {grid:grid, gridSize:gridSize, unsolvedSquares:new Set<number>, selectedCells:new Set<number>};
     cnv = <HTMLCanvasElement> document.getElementById("myCanvas");
-    eventListeners_init(cnv, playBoard);
+    eventListeners_init(cnv, playBoard, [window.innerWidth, window.innerHeight]);
     resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
 }
 
