@@ -7,15 +7,15 @@ let gridSize = 9;
 let grid = [[]];
 let playBoard;
 window.onload = function () {
-    //board = populateBoard(gridSize);
+    //sudoku tests
     grid = cellBoardFromValues(medium);
     //grid= cellBoardFromValues(twoWays);
     //grid= cellBoardFromValues(sofia[0]);
-    playBoard = { grid: grid, gridSize: gridSize, unsolvedSquares: new Set, selectedCells: new Set };
+    playBoard = { grid: grid, gridSize: gridSize, unsolvedSquares: new Set, selectedCells: new Set }; //create board
     cnv = document.getElementById("myCanvas");
-    eventListeners_init(cnv, playBoard, [window.innerWidth, window.innerHeight]);
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
+    eventListeners_init(cnv, playBoard, [window.innerWidth, window.innerHeight]); //Initialise event listeners for user input handling
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard); //resize canvas and draw grid
 };
 window.onresize = function () {
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard);
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, playBoard); //resize canvas and draw grid when window size changes
 };
