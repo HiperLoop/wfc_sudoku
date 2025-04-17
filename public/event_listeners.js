@@ -29,8 +29,13 @@ export function eventListeners_init(cnv, board, windowSize) {
         if (event.defaultPrevented) {
             return; // Do nothing if the event was already processed
         }
-        const num = Number(event.key);
-        if (num > 0 && num <= 9) {
+        var num = Number(event.key);
+        //removal of number
+        if (event.key == "Delete" || event.key == "Backspace") {
+            num = 0;
+        }
+        //adding of number
+        if (num >= 0 && num <= 9) {
             console.log(num);
             board.selectedCells.forEach((value) => {
                 //if number was given, it cannot be changed
