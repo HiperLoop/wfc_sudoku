@@ -205,12 +205,15 @@ function boxRows(board) {
     }
 }
 //uses inference chains to conclude inevitable truths about cells
-function inferenceChain(board, coords, windowSize, canvas) {
-    return __awaiter(this, void 0, void 0, function* () {
+function inferenceChain(board_1, coords_1, windowSize_1, canvas_1) {
+    return __awaiter(this, arguments, void 0, function* (board, coords, windowSize, canvas, maxIterations = 5, currentDepth) {
         let tryBoards = [];
         const x = coords[0];
         const y = coords[1];
         const checks = board.grid[x][y].possibilities.size;
+        if (checks == 0) {
+            return -1;
+        } //if no possibilities, return error
         //creates new boards to try all possiblities for selected cell
         let gridCopy = [];
         for (let o = 0; o < checks; ++o) {
@@ -234,10 +237,9 @@ function inferenceChain(board, coords, windowSize, canvas) {
             updateCell(tryBoards[j], [x, y], setValue[j]);
         }
         //run wfc on copied boards
-        const maxIterations = 5;
         for (let j = 0; j < checks; ++j) {
             for (let k = 0; k < maxIterations && tryBoards[j].unsolvedSquares.size > 0; ++k) {
-                if ((yield waveFunctionCollapseStep(tryBoards[j], windowSize, canvas, false, false, true)) != 0) {
+                if ((yield waveFunctionCollapseStep(tryBoards[j], windowSize, canvas, false, currentDepth > 0, true, currentDepth - 1)) != 0) {
                     break;
                 }
                 ; //exclude recursive inference
@@ -278,7 +280,7 @@ function inferenceChain(board, coords, windowSize, canvas) {
     });
 }
 //updates cell value, possibilities, removes form unsolved squares and updates lines + box
-function updateCell(board, coords, value) {
+export function updateCell(board, coords, value) {
     board.grid[coords[0]][coords[1]].num = value; //set cell to value
     board.unsolvedSquares.delete((coords[0] * board.gridSize) + coords[1]); //remove cell form unsolved
     board.grid[coords[0]][coords[1]].possibilities = new Set([value]); //set only possibility to value
@@ -289,7 +291,7 @@ function updateCell(board, coords, value) {
 }
 //based on wfc, looks at cell with least entropy and updates if solvable. no solvable -> inference/line+box methods/sneyder method
 function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
-    return __awaiter(this, arguments, void 0, function* (board, windowSize, canvas, drawSteps = true, doInference = true, calledByChain = false) {
+    return __awaiter(this, arguments, void 0, function* (board, windowSize, canvas, drawSteps = true, doInference = true, calledByChain = false, maxInferenceIterations = 5, inferenceDepth = 0) {
         let checkSquares = [];
         if (board.unsolvedSquares.size == 0) {
             return 1;
@@ -298,7 +300,7 @@ function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
         board.unsolvedSquares.forEach((value, key, set) => { checkSquares[value] = [board.grid[Math.floor(value / board.gridSize)][value % board.gridSize].possibilities.size, value]; });
         checkSquares.sort((a, b) => a[0] - b[0]);
         //solve all solvable
-        for (let i = 0; checkSquares[i][0] == 1; ++i) {
+        for (let i = 0; checkSquares[i] && checkSquares[i][0] == 1; ++i) {
             const x = Math.floor(checkSquares[i][1] / board.gridSize);
             const y = checkSquares[i][1] % board.gridSize;
             let setValue = 10;
@@ -310,6 +312,7 @@ function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
             if (setValue == 10) {
                 console.error(`No possibilities in cell [${x}, ${y}]`);
                 console.error(board.unsolvedSquares);
+                return -1; //return usnolvable
             }
             else {
                 updateCell(board, [x, y], setValue); //if no error, update cell
@@ -329,7 +332,9 @@ function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
             for (let i = 0; i < board.unsolvedSquares.size && checkSquares[i][0] <= 9; ++i) {
                 const x = Math.floor(checkSquares[i][1] / board.gridSize);
                 const y = checkSquares[i][1] % board.gridSize;
-                yield inferenceChain(board, [x, y], windowSize, canvas); //call inference on cell
+                if ((yield inferenceChain(board, [x, y], windowSize, canvas, maxInferenceIterations, inferenceDepth)) == -1) {
+                    return -1;
+                } //call inference on cell
                 if (drawSteps)
                     yield drawBoard(board, canvas, windowSize, true);
                 if (board.unsolvedSquares.size == 0) {
@@ -354,24 +359,32 @@ function waveFunctionCollapseStep(board_1, windowSize_1, canvas_1) {
     });
 }
 //sudoku solver
-export function solve(board_1, windowSize_1, canvas_1, maxWFCiterations_1) {
-    return __awaiter(this, arguments, void 0, function* (board, windowSize, canvas, maxWFCiterations, useInference = true) {
+export function solve(board_1, windowSize_1, canvas_1, maxWFCiterations_1, draw_1) {
+    return __awaiter(this, arguments, void 0, function* (board, windowSize, canvas, maxWFCiterations, draw, useInference = true, maxInferenceIterations = 5, inferenceDepth = 0) {
         board_generateUnsolvedSquares(board); //generate set of unsolved squares
         generateDegreesOfFreedom(board); //initial possiblities for every cell
-        yield drawBoard(board, canvas, windowSize, true);
+        if (draw)
+            yield drawBoard(board, canvas, windowSize, true);
         for (let i = 0; board.unsolvedSquares.size > 0 && i < maxWFCiterations; ++i) {
             console.log(`Iterations: ${i + 1}/${maxWFCiterations}`);
-            if ((yield waveFunctionCollapseStep(board, windowSize, canvas, true, useInference)) == 1) {
+            const solvable = yield waveFunctionCollapseStep(board, windowSize, canvas, draw, useInference, false, maxInferenceIterations, inferenceDepth);
+            if (solvable == -1) {
+                return -1; //return -1 if unsolvable
+            }
+            if (solvable == 1) {
                 console.log(`Sudoku solved in ${i + 1} iterations!`);
-                yield drawBoard(board, canvas, windowSize, true, false);
+                if (draw)
+                    yield drawBoard(board, canvas, windowSize, true, false);
                 return 1;
             }
-            yield drawBoard(board, canvas, windowSize, true, false);
+            if (draw)
+                yield drawBoard(board, canvas, windowSize, true, false);
         }
         console.log(`Solver ran out of iterations before solving with ${board.unsolvedSquares.size} unsolved squares.`);
-        yield drawBoard(board, canvas, windowSize, true, false);
+        if (draw)
+            yield drawBoard(board, canvas, windowSize, true, false);
         let solved = 1;
-        board.unsolvedSquares.size > 0 ? console.log("Sudoku solved!") : solved = -1;
-        return solved; //return 1 if solved, -1 if unsoved
+        board.unsolvedSquares.size == 0 ? console.log("Sudoku solved!") : solved = 0;
+        return solved; //return 1 if solved, 0 if unsoved
     });
 }
