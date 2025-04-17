@@ -1,6 +1,6 @@
 import { easy, medium, als, shion } from "./tests.js";
-import { coordsFromClick, drawBoard } from "./canvas.js";
-import { board, board_deselectAll, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
+import { coordsFromClick, copyToClipboard, drawBoard } from "./canvas.js";
+import { board, board_boardToString, board_deselectAll, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
 import { solve } from "./solver.js";
 
 //initializes all event listeners for user input
@@ -55,6 +55,15 @@ export function eventListeners_init(cnv:HTMLCanvasElement, board:board, windowSi
         drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false);
     }) : console.error("Load event listener failed!");
     
+    //get string to copy
+    const copy_button = document.getElementById("copy_button");
+    const givenSelector = <HTMLInputElement>document.getElementById("givenSelector");
+    copy_button && givenSelector ? copy_button.addEventListener("click", (event) => {
+        const boardString:string = board_boardToString(board, givenSelector.value == "1");
+        copyToClipboard(boardString);
+        alert(`Sudoku string copied to clipboard!`);
+    }) : console.error("Copy event listener failed!");
+
     //keyboard
     window.addEventListener("keydown", function (event) {
 
