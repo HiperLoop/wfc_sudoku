@@ -1,10 +1,15 @@
 import { easy, medium, als } from "./tests.js";
 import { coordsFromClick, drawBoard } from "./canvas.js";
-import { cellBoardFromValues, empty_grid } from "./board.js";
+import { board_selectCell, cellBoardFromValues, empty_grid, keyboardInput_init } from "./board.js";
 import { solve } from "./solver.js";
-export function eventListeners_init(cnv, board) {
+export function eventListeners_init(cnv, board, windowSize) {
     //canvas
-    cnv.addEventListener("mouseup", (event) => { console.log(coordsFromClick(event, board.gridSize, cnv, [window.innerWidth, window.innerHeight])); });
+    cnv.addEventListener("mousedown", (event) => {
+        board_selectCell(board, coordsFromClick(event, board.gridSize, cnv, [window.innerWidth, window.innerHeight]), cnv, windowSize, event.ctrlKey);
+        console.log(coordsFromClick(event, board.gridSize, cnv, [window.innerWidth, window.innerHeight]));
+        console.log(board.selectedCells);
+        drawBoard(board, cnv, windowSize);
+    });
     //solve
     const solve_button = document.getElementById("solve_button");
     solve_button ? solve_button.addEventListener("click", (event) => { solve(board, [window.innerWidth, window.innerHeight], cnv); drawBoard(board, cnv, [window.innerWidth, window.innerHeight], true); }) : console.error("Solve event listener failed!");
@@ -16,4 +21,6 @@ export function eventListeners_init(cnv, board) {
     const load_options = document.getElementById("load_options");
     const load_sudokus = [easy, medium, als];
     load_button && load_options ? load_button.addEventListener("click", (event) => { board.grid = cellBoardFromValues(load_sudokus[Number(load_options.value)]); drawBoard(board, cnv, [window.innerWidth, window.innerHeight], false); }) : console.error("Load event listener failed!");
+    //keyboard
+    keyboardInput_init(board, cnv, windowSize);
 }
