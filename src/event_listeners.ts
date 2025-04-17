@@ -1,5 +1,5 @@
 import { easy, medium, als, shion } from "./tests.js";
-import { blackPalette, coordsFromClick, copyToClipboard, currentPalette, drawBoard, setPalette, whitePalette } from "./canvas.js";
+import { blackPalette, coordsFromClick, copyToClipboard, currentPalette, drawBoard, setPalette, traditionalPalette, whitePalette } from "./canvas.js";
 import { board, board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_givenGrid, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
@@ -24,6 +24,9 @@ export function eventListeners_init(cnv:HTMLCanvasElement, board:board, windowSi
                 break;
             case 1:
                 setPalette(blackPalette);
+                break;
+            case 2:
+                setPalette(traditionalPalette);
                 break;
             default:
                 console.error("Wrong palette option!");
@@ -101,9 +104,15 @@ export function eventListeners_init(cnv:HTMLCanvasElement, board:board, windowSi
     //generate new sudoku
     const generate_button = document.getElementById("generate_button");
     generate_button ? generate_button.addEventListener("click", async (event) => {
+        var copyOfPalette = currentPalette;
+        const tempGiven = currentPalette.given;
+        copyOfPalette.given = "#00BBFF";
+        setPalette(copyOfPalette);
         board = await generateBoard(board.gridSize, Number(slider.value), windowSize, cnv);
         board = await fixBoardToFitDifficulty(board, Number(slider.value), windowSize, cnv);
         board = board_givenGrid(board);
+        copyOfPalette.given = tempGiven;
+        setPalette(copyOfPalette);
         await drawBoard(board, cnv, windowSize);
     }) : console.error("Generate event listener failed!");
 

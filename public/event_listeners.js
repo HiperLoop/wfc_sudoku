@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { easy, medium, als } from "./tests.js";
-import { blackPalette, coordsFromClick, copyToClipboard, currentPalette, drawBoard, setPalette, whitePalette } from "./canvas.js";
+import { blackPalette, coordsFromClick, copyToClipboard, currentPalette, drawBoard, setPalette, traditionalPalette, whitePalette } from "./canvas.js";
 import { board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_givenGrid, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid } from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
@@ -31,6 +31,9 @@ export function eventListeners_init(cnv, board, windowSize) {
                 break;
             case 1:
                 setPalette(blackPalette);
+                break;
+            case 2:
+                setPalette(traditionalPalette);
                 break;
             default:
                 console.error("Wrong palette option!");
@@ -105,9 +108,15 @@ export function eventListeners_init(cnv, board, windowSize) {
     //generate new sudoku
     const generate_button = document.getElementById("generate_button");
     generate_button ? generate_button.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
+        var copyOfPalette = currentPalette;
+        const tempGiven = currentPalette.given;
+        copyOfPalette.given = "#00BBFF";
+        setPalette(copyOfPalette);
         board = yield generateBoard(board.gridSize, Number(slider.value), windowSize, cnv);
         board = yield fixBoardToFitDifficulty(board, Number(slider.value), windowSize, cnv);
         board = board_givenGrid(board);
+        copyOfPalette.given = tempGiven;
+        setPalette(copyOfPalette);
         yield drawBoard(board, cnv, windowSize);
     })) : console.error("Generate event listener failed!");
     //keyboard
