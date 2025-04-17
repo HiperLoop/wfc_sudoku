@@ -1,3 +1,4 @@
+import { drawBoard } from "./canvas.js";
 export const empty_grid = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -44,4 +45,34 @@ export function board_random(gridSize) {
     /* board[0][0].num = 1;
     board[2][2].num = 3; */
     return board;
+}
+export function board_selectCell(board, coords, cnv, windowSize, ctrl) {
+    board.grid[coords[0]][coords[1]].selected = !board.grid[coords[0]][coords[1]].selected;
+    if (ctrl) {
+        board.grid[coords[0]][coords[1]].selected ? board.selectedCells.add((board.gridSize * coords[0]) + coords[1]) : board.selectedCells.delete((board.gridSize * coords[0]) + coords[1]);
+    }
+    else {
+        board.selectedCells.forEach((value) => { board.grid[Math.floor(value / board.gridSize)][value % board.gridSize].selected = false; });
+        board.selectedCells = new Set(board.grid[coords[0]][coords[1]].selected ? [(board.gridSize * coords[0]) + coords[1]] : null);
+    }
+    drawBoard(board, cnv, windowSize);
+}
+export function keyboardInput_init(board, cnv, windowSize) {
+    window.addEventListener("keydown", function (event) {
+        if (event.defaultPrevented) {
+            return; // Do nothing if the event was already processed
+        }
+        console.log("inside:");
+        console.log(board.selectedCells);
+        const num = Number(event.key);
+        console.log(num);
+        if (num > 0 && num <= 9) {
+            board.selectedCells.forEach((value) => {
+                board.grid[Math.floor(value / board.gridSize)][value % board.gridSize].num = num;
+            });
+        }
+        // Cancel the default action to avoid it being handled twice
+        event.preventDefault();
+        drawBoard(board, cnv, windowSize);
+    }, true);
 }
