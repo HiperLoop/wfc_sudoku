@@ -96,24 +96,25 @@ export function board_lockGiven(board:board) {
 }
 
 //converts string to board
-export function board_stringToGrid(inputString:String) {
-    var numbers:number[][] = empty_grid;
+export function board_stringToGrid(inputString:string) {
+    var numbers:number[][] = [];
     //worng string length
     if(inputString.length != 81) {return [numbers, [[inputString.length]]];}
 
     //convert string to grid
     for(let i = 0; i < inputString.length; ++i) {
-        numbers[Math.floor(Number(inputString[i])/numbers[0].length)][Number(inputString[i])%numbers[0].length] = inputString[i] == "." ? 0 : Number(inputString[i]);
+        if(i % 9 == 0) {numbers[Math.floor(i/9)] = [];}
+        numbers[Math.floor(i/9)][i%9] = inputString[i] == "." ? 0 : Number(inputString[i]);
     }
     return [numbers, [[-1]]];
 }
 
 //converts board to string
-export function board_boardToString(board:board) {
-    var outputString:String = "";
+export function board_boardToString(board:board, onlyGiven:boolean=false) {
+    var outputString:string = "";
     for(let i = 0; i < board.gridSize; ++i) {
         for(let j = 0; j < board.gridSize; ++j) {
-            outputString += board.grid[i][j].num.toString();
+            outputString += board.grid[i][j].num == 0 ? "." : onlyGiven ? board.grid[i][j].given ? board.grid[i][j].num.toString() : "." : board.grid[i][j].num.toString();
         }
     }
     return outputString;
