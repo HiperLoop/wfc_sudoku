@@ -1,5 +1,5 @@
 import { easy, medium, als, shion } from "./tests.js";
-import { coordsFromClick, copyToClipboard, drawBoard } from "./canvas.js";
+import { blackPalette, coordsFromClick, copyToClipboard, currentPalette, drawBoard, setPalette, whitePalette } from "./canvas.js";
 import { board, board_boardToString, board_deselectAll, board_generateUnsolvedSquares, board_givenGrid, board_lockGiven, board_selectCell, board_stringToGrid, cellBoardFromValues, empty_grid} from "./board.js";
 import { generateDegreesOfFreedom, solve } from "./solver.js";
 import { fixBoardToFitDifficulty, generateBoard } from "./generator.js";
@@ -13,6 +13,23 @@ export function eventListeners_init(cnv:HTMLCanvasElement, board:board, windowSi
         console.log(board.selectedCells);
         drawBoard(board, cnv, windowSize);
     });
+
+    //select colour theme
+    const palette_options = <HTMLInputElement>document.getElementById("paletteSelector");
+    palette_options ? palette_options.value = currentPalette == whitePalette ? "0" : "1" : null;
+    palette_options ? palette_options.addEventListener("change", (event) => {
+        switch(Number(palette_options.value)) {
+            case 0:
+                setPalette(whitePalette);
+                break;
+            case 1:
+                setPalette(blackPalette);
+                break;
+            default:
+                console.error("Wrong palette option!");
+        }
+        drawBoard(board, cnv, windowSize);
+    }) : console.error("Palette options event listener failed!");
 
     //solve
     const maxSolverIterations = 10;

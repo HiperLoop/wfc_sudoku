@@ -213,4 +213,11 @@ export function colourInit() {
     slider ? slider.style.color = currentPalette.slider: null;
     const diffDisplay = document.getElementById("diff");
     diffDisplay ? diffDisplay.style.color = currentPalette.font : null;
+    const colourPick = document.getElementById("colourPick");
+    colourPick ? colourPick.style.color = currentPalette.font : null;
+}
+
+export function setPalette(palette:colourPalette) {
+    currentPalette = palette;
+    colourInit();
 }
