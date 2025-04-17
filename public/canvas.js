@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 //offset from edges (both sides together)
-export const CANVAS_OFFSET = 20;
+export const CANVAS_OFFSET = 60;
 //return wheather window is higher than wide (pohone mode)
 export function isHigh(windowSize) {
     return windowSize[1] > windowSize[0] ? true : false;
@@ -132,11 +132,11 @@ export function coordsFromClick(event, gridSize, canvas, windowSize) {
     var clickX = event.x;
     var clickY = event.y;
     if (isHigh(windowSize)) {
-        clickX -= CANVAS_OFFSET;
+        clickX -= CANVAS_OFFSET / 2;
         clickY -= (windowSize[1] - canvas.height) / 2;
     }
     else {
-        clickY -= CANVAS_OFFSET;
+        clickY -= CANVAS_OFFSET / 2;
         clickX -= (windowSize[0] - canvas.width) / 2;
     }
     const cellSize = canvas.height / gridSize;

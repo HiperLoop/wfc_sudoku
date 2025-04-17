@@ -1,7 +1,7 @@
 import { board, cell } from "./board.js";
 
 //offset from edges (both sides together)
-export const CANVAS_OFFSET = 20;
+export const CANVAS_OFFSET = 60;
 
 //return wheather window is higher than wide (pohone mode)
 export function isHigh(windowSize:number[]): boolean {
@@ -134,11 +134,11 @@ export function coordsFromClick(event:MouseEvent, gridSize:number, canvas:HTMLCa
     var clickX:number = event.x;
     var clickY:number = event.y;
     if(isHigh(windowSize)) {
-        clickX -= CANVAS_OFFSET;
+        clickX -= CANVAS_OFFSET/2;
         clickY -= (windowSize[1] - canvas.height)/2;
     }
     else {
-        clickY -= CANVAS_OFFSET;
+        clickY -= CANVAS_OFFSET/2;
         clickX -= (windowSize[0] - canvas.width)/2;
     }
     const cellSize = canvas.height/gridSize;
